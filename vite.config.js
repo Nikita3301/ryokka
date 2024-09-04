@@ -12,6 +12,9 @@ export default defineConfig({
       services: "/src/services",
       utils: "/src/utils",
     },
+  }, optimizeDeps: {
+    include: ['@fortawesome/react-fontawesome'],
   }
+  
 });
 
