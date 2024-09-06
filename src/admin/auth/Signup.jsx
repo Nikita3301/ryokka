@@ -12,12 +12,15 @@ import {
   LockClosedIcon,
   EyeSlashIcon,
   EyeIcon,
-  ArrowRightIcon
+  ArrowRightIcon,
 } from "@heroicons/react/24/solid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 
-import ErrorMessage from "../../utils/ErrorMessage";
+import ErrorMessage from "utils/ErrorMessage";
+
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -44,12 +47,14 @@ const Signup = () => {
       }
       const token = credential.accessToken;
       const user = result.user;
+
+      navigate("/home");
+
       console.log(user, token);
     } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      const email = error.customData.email;
-      const credential = GoogleAuthProvider.credentialFromError(error);
+      toast.error(
+        "There was an issue signing up with Google. Please try again."
+      );
     }
   };
 
@@ -71,7 +76,6 @@ const Signup = () => {
     await createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        console.log(user);
         navigate("/login");
       })
       .catch((error) => {
@@ -100,8 +104,8 @@ const Signup = () => {
             Create new account
           </h1>
 
-          <div className="text-white  border bg-gradient-to-r from-teal-500 to-yellow-300 rounded p-0.5">
-            <span className="flex justify-center gap-3 w-full bg-neutral-950 rounded p-1">
+          <div className="text-white border bg-gradient-to-r from-teal-600 via-teal-500 to-yellow-400 rounded-2xl p-0.5">
+            <span className="flex justify-center gap-3 w-full bg-neutral-950 rounded-2xl p-1">
               <FontAwesomeIcon icon={faGoogle} className="w-5 h-5 p-2" />
               <button onClick={SignUpWithGoogle}>Sign up with Google</button>
             </span>
@@ -121,7 +125,7 @@ const Signup = () => {
             </div>
             <div className="relative mb-4">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <EnvelopeIcon className="w-4 h-4" />
+                <EnvelopeIcon className="w-4 h-4 text-white" />
               </div>
               <input
                 type="email"
@@ -130,7 +134,7 @@ const Signup = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="Email address"
-                className="rounded-lg pl-10 w-full font-medium block flex-1 text-sm p-2.5"
+                className="bg-neutral-900 text-white rounded-xl pl-10 w-full font-medium block flex-1 text-sm p-2.5 border-2 border-teal-600 focus:outline-none focus:ring-1 focus:ring-teal-500 transition duration-500"
               />
             </div>
 
@@ -145,7 +149,7 @@ const Signup = () => {
 
             <div className="relative mb-6">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3">
-                <LockClosedIcon className="w-4 h-4" />
+                <LockClosedIcon className="w-4 h-4 text-white" />
               </div>
               <input
                 type={showPassword ? "text" : "password"}
@@ -156,16 +160,16 @@ const Signup = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="Password"
-                className="font-medium text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full pl-10 pr-10 p-2.5"
+                className="bg-neutral-900 text-white rounded-xl pl-10 w-full font-medium block flex-1 text-sm p-2.5 border-2 border-teal-600 focus:outline-none focus:ring-1 focus:ring-teal-500 transition duration-500"
               />
               <div
                 className="absolute inset-y-0 right-0 flex items-center pr-3"
                 onClick={handleShowPasswordToggle}
               >
                 {showPassword ? (
-                  <EyeSlashIcon className="w-4 h-4" />
+                  <EyeSlashIcon className="w-4 h-4 text-white" />
                 ) : (
-                  <EyeIcon className="w-4 h-4" />
+                  <EyeIcon className="w-4 h-4 text-white" />
                 )}
               </div>
             </div>
@@ -181,7 +185,7 @@ const Signup = () => {
 
             <div className="relative mb-6">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3">
-                <LockClosedIcon className="w-4 h-4" />
+                <LockClosedIcon className="w-4 h-4 text-white" />
               </div>
               <input
                 type="password"
@@ -192,7 +196,7 @@ const Signup = () => {
                 onChange={(e) => setRepeatPassword(e.target.value)}
                 required
                 placeholder="Repeat password"
-                className="font-medium text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full pl-10 pr-10 p-2.5"
+                className="bg-neutral-900 text-white rounded-xl pl-10 w-full font-medium block flex-1 text-sm p-2.5 border-2 border-teal-600 focus:outline-none focus:ring-1 focus:ring-teal-500 transition duration-500"
               />
             </div>
 
@@ -200,10 +204,9 @@ const Signup = () => {
               type="submit"
               onClick={onSubmit}
               className="w-full bg-gradient-to-r font-semibold from-teal-600 via-teal-500 to-yellow-300 text-white py-2 px-2 rounded-md flex items-center justify-center space-x-2"
-
             >
               <span>Sign up</span>
-              <ArrowRightIcon className="w-4 h-4"/>
+              <ArrowRightIcon className="w-4 h-4" />
             </button>
 
             <div className="flex items-center justify-center h-3 my-5">
@@ -213,9 +216,22 @@ const Signup = () => {
 
           <p className="text-white flex justify-center">
             Already have an account?&nbsp;
-            <NavLink className="text-teal-600 font-semibold" to="/admin/login">Sign in</NavLink>
+            <NavLink
+              className="text-yellow-400 font-semibold"
+              to="/admin/login"
+            >
+              Sign in
+            </NavLink>
           </p>
         </div>
+
+        <ToastContainer
+          position="bottom-center"
+          autoClose={3000}
+          limit={3}
+          theme="dark"
+          stacked
+        />
       </div>
     </div>
   );

@@ -9,6 +9,8 @@ export default defineConfig({
       src: "/src",
       components: "/src/components",
       pages: "/src/pages",
+      admin: "/src/admin",
+      auth: "/src/admin/auth",
       services: "/src/services",
       utils: "/src/utils",
     },

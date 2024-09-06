@@ -11,7 +11,7 @@ export default function App() {
         <div>
           <Header />
         </div>
-        <div className="overflow-y-auto bg-black flex-1">
+        <div className="overflow-y-auto bg-neutral-950 flex-1">
           <AppRouter />
         </div>
         <div className="bottom-0">

@@ -79,24 +79,24 @@ export default function ProjectTeam() {
   const [activeRole, setActiveRole] = useState(teamData[0].role);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-neutral-950 p-6 text-gray-200">
       {/* Tabs at the top */}
-      <div className="flex justify-center space-x-4 mb-8 ">
+      <div className="flex justify-center space-x-4 mb-8">
         {teamData.map((division) => (
           <button
             key={division.role}
             onClick={() => setActiveRole(division.role)}
             className={`px-4 py-2 rounded-lg ${
               activeRole === division.role
-                ? "bg-gray-400 text-white font-semibold"
-                : "text-gray-800 font-semibold"
-            } focus:outline-none`}
+                ? "bg-teal-600 text-white font-semibold"
+                : "text-gray-400 font-semibold"
+            } focus:outline-none transition-colors duration-300`}
           >
             {division.role}
           </button>
         ))}
       </div>
-
+  
       {/* Team Members */}
       <div className="flex flex-col items-center justify-center">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -105,34 +105,32 @@ export default function ProjectTeam() {
             .members.map((member) => (
               <div
                 key={member.name}
-                className="bg-white p-3 rounded-2xl shadow-lg flex flex-col items-center text-center"
+                className="bg-neutral-900 p-6 rounded-2xl shadow-lg flex flex-col items-center text-center transform transition-transform hover:scale-105"
               >
                 <img
                   src={member.photo}
                   alt={member.name}
                   className="w-52 h-52 rounded-xl mb-4 object-cover"
                 />
-                <h3 className="text-lg font-semibold mb-2">{member.name}</h3>
-                <p className="text-sm text-gray-600 mb-2">{member.role}</p>
-
+                <h3 className="text-lg font-semibold mb-2 text-gray-100">{member.name}</h3>
+                <p className="text-sm text-gray-400 mb-2">{member.role}</p>
+  
                 <div className="flex space-x-4 mt-2">
                   <a
                     href={member.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
+                    className="text-teal-400 hover:text-teal-500 transition-colors"
                   >
-                    {" "}
-                    <FontAwesomeIcon icon={faLinkedin} className="w-6 h-6 text-gray-500"/>
+                    <FontAwesomeIcon icon={faLinkedin} className="w-6 h-6" />
                   </a>
                   <a
                     href={member.twitter}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-400 hover:underline"
+                    className="text-purple-400 hover:text-purple-500 transition-colors"
                   >
-                    {" "}
-                    <FontAwesomeIcon icon={faTwitter} className="w-6 h-6 text-gray-500"/>
+                    <FontAwesomeIcon icon={faTwitter} className="w-6 h-6" />
                   </a>
                 </div>
               </div>
@@ -141,4 +139,5 @@ export default function ProjectTeam() {
       </div>
     </div>
   );
+  
 }

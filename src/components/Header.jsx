@@ -1,30 +1,34 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-
+import LogoImg from "/logo.svg"
 
 export default function Header() {
   return (
     <header className="bg-neutral-900 text-white p-4">
-      <nav className="container mx-auto flex justify-between items-center">
-        <div className="text-lg font-semibold">
-          <NavLink to="/" className="hover:text-gray-300">
+      <nav className="px-4 flex justify-between items-center font-semibold">
+        <div className="flex justify-center items-center gap-4 text-lg">
+          <img
+            src={LogoImg}
+            alt="Logo"
+            className="h-10 w-auto"
+          />
+          <NavLink to="/home" className="hover:text-gray-300">
             Landscape
           </NavLink>
         </div>
         <div className="space-x-4">
           <NavLink
-            to="/"
+            to="/home"
             className={({ isActive }) =>
-              isActive ? "text-yellow-400" : "hover:text-gray-300"
+              isActive ? "text-teal-400" : "hover:text-gray-300"
             }
-            end
           >
             Dashboard
           </NavLink>
           <NavLink
             to="/projects"
             className={({ isActive }) =>
-              isActive ? "text-yellow-400" : "hover:text-gray-300"
+              isActive ? "text-teal-400" : "hover:text-gray-300"
             }
           >
             Projects
@@ -32,7 +36,7 @@ export default function Header() {
           <NavLink
             to="/team"
             className={({ isActive }) =>
-              isActive ? "text-yellow-400" : "hover:text-gray-300"
+              isActive ? "text-teal-400" : "hover:text-gray-300"
             }
           >
             Project Team
@@ -40,7 +44,7 @@ export default function Header() {
           <NavLink
             to="/gallery"
             className={({ isActive }) =>
-              isActive ? "text-yellow-400" : "hover:text-gray-300"
+              isActive ? "text-teal-400" : "hover:text-gray-300"
             }
           >
             Gallery
