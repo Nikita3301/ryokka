@@ -7,7 +7,12 @@ export default function NotFound() {
   return (
     <div
       className="h-full w-full flex flex-col items-center justify-center bg-neutral-900 text-white"
-      style={{ backgroundImage: "url(/backimg.jpg)" }}
+      style={{ 
+        backgroundImage: "url(/backimg.jpg)", 
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat"
+      }}
     >
       <h1 className="text-8xl font-bold mb-4 text-white">404</h1>
       <p className="text-2xl mb-8">Oops! Page not found.</p>

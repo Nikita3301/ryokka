@@ -12,14 +12,14 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col md:flex-row justify-between items-center font-semibold">
           {/* Logo */}
-          <div className="flex items-center gap-4 mb-4 md:mb-0">
+          <div className="flex items-center gap-2 mb-4 md:mb-0">
             <img
               src={LogoImg}
               alt="Your Logo"
               className="w-10 h-10"
             />
             <NavLink to="/home" className="hover:text-gray-300">
-            Landscape
+            Ryokka
           </NavLink>
           </div>
 
@@ -46,7 +46,7 @@ export default function Footer() {
 
         {/* Copyright */}
         <div className="mt-2 text-center text-sm">
-          &copy; {new Date().getFullYear()} Your Company. All rights reserved.
+          &copy; {new Date().getFullYear()} Ryokka. All rights reserved.
         </div>
       </div>
     </footer>

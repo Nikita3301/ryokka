@@ -6,14 +6,14 @@ export default function Header() {
   return (
     <header className="bg-neutral-900 text-white p-4">
       <nav className="px-4 flex justify-between items-center font-semibold">
-        <div className="flex justify-center items-center gap-4 text-lg">
+        <div className="flex justify-center items-center gap-2 text-lg">
           <img
             src={LogoImg}
             alt="Logo"
             className="h-10 w-auto"
           />
           <NavLink to="/home" className="hover:text-gray-300">
-            Landscape
+          Ryokka    
           </NavLink>
         </div>
         <div className="space-x-4">
