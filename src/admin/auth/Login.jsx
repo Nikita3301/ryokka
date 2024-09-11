@@ -20,7 +20,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import ErrorMessage from "utils/ErrorMessage";
 
-import { toast, ToastContainer} from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
@@ -39,8 +39,11 @@ const Login = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        navigate("/home");
-        console.log(user);
+        user.getIdToken().then((token) => {
+          console.log("Firebase ID Token:", token);  // Log the token to verify
+          localStorage.setItem('firebaseToken', token);
+          navigate("/home");
+        })
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -74,8 +77,13 @@ const Login = () => {
     signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
-        console.log("Google Login Success:", user);
-        navigate("/home");
+        user.getIdToken().then((token) => {
+          console.log("Firebase ID Token:", token);  // Log the token to verify
+          localStorage.setItem('firebaseToken', token);
+          console.log("Google Login Success:", user);
+          navigate("/home");
+        })
+    
       })
       .catch((error) => {
         console.error("Google Login Error:", error);

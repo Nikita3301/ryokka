@@ -1,134 +1,109 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTwitter } from "@fortawesome/free-brands-svg-icons";
 import { faLinkedin } from "@fortawesome/free-brands-svg-icons";
 
-export default function ProjectTeam() {
-  const teamData = [
-    {
-      role: "Project Manager",
-      members: [
-        {
-          name: "Alice Johnson",
-          photo: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-          email: "alice@example.com",
-          phone: "123-456-7890",
-          linkedin: "https://www.linkedin.com/in/alicejohnson",
-          twitter: "https://twitter.com/alicejohnson",
-          role: "Project Manager",
-        },
-        {
-          name: "Bob Smith",
-          photo: "https://images.unsplash.com/photo-1492447166138-50c3889fccb1?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-          email: "bob@example.com",
-          phone: "098-765-4321",
-          linkedin: "https://www.linkedin.com/in/bobsmith",
-          twitter: "https://twitter.com/bobsmith",
-          role: "Project Manager",
-        },
-      ],
-    },
-    {
-      role: "Developers",
-      members: [
-        {
-          name: "Cat",
-          photo: "/cat.jpg",
-          email: "vitalya@example.com",
-          phone: "111-222-3333",
-          linkedin: "https://www.linkedin.com/in/charliebrown",
-          twitter: "https://twitter.com/charliebrown",
-          role: "Just cat - myaw",
-        },
-      ],
-    },
-    {
-      role: "Designers",
-      members: [
-        {
-          name: "Emily Davis",
-          photo: "/path/to/photo5.jpg",
-          email: "emily@example.com",
-          phone: "777-888-9999",
-          linkedin: "https://www.linkedin.com/in/emilydavis",
-          twitter: "https://twitter.com/emilydavis",
-          role: "Designer",
-        },
-        {
-          name: "Frank White",
-          photo: "/path/to/photo6.jpg",
-          email: "frank@example.com",
-          phone: "000-111-2222",
-          linkedin: "https://www.linkedin.com/in/frankwhite",
-          twitter: "https://twitter.com/frankwhite",
-          role: "Designer",
-        },
-      ],
-    },
-  ];
+import { getAllEmployees } from "services/ProjectTeamService";
 
-  const [activeRole, setActiveRole] = useState(teamData[0].role);
+export default function ProjectTeam() {
+  const [employees, setEmployees] = useState([]);
+  const [activePosition, setActivePosition] = useState("");
+  const [uniquePositions, setUniquePositions] = useState("");
+
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const data = await getAllEmployees();
+
+        const uniquePositionsSet = [
+          ...new Set(data.map((employee) => employee.jobTitle)),
+        ];
+
+        setUniquePositions(uniquePositionsSet);
+        setEmployees(data);
+      
+      
+
+        if (uniquePositionsSet.length > 0) {
+          setActivePosition(uniquePositionsSet[0]);
+        }
+       
+      } catch (error) {
+        console.error("Error fetching employees:", error);
+      }
+    };
+    fetchEmployees();
+  }, []);
 
   return (
     <div className="min-h-screen bg-neutral-950 p-6 text-gray-200">
       {/* Tabs at the top */}
       <div className="flex justify-center space-x-4 mb-8">
-        {teamData.map((division) => (
-          <button
-            key={division.role}
-            onClick={() => setActiveRole(division.role)}
-            className={`px-4 py-2 rounded-lg ${
-              activeRole === division.role
-                ? "bg-teal-600 text-white font-semibold"
-                : "text-gray-400 font-semibold"
-            } focus:outline-none transition-colors duration-300`}
-          >
-            {division.role}
-          </button>
-        ))}
+        {uniquePositions.length > 0 &&
+          uniquePositions.map((jobTitle) => (
+            <button
+              key={jobTitle} // Key by jobTitle for efficient updates
+              onClick={() => setActivePosition(jobTitle)}
+              className={`px-4 py-2 rounded-lg ${
+                activePosition === jobTitle
+                  ? "bg-teal-600 text-white font-semibold"
+                  : "text-gray-400 font-semibold"
+              } focus:outline-none transition-colors duration-300`}
+            >
+              {jobTitle}
+            </button>
+          ))}
       </div>
-  
+
       {/* Team Members */}
-      <div className="flex flex-col items-center justify-center">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {teamData
-            .find((division) => division.role === activeRole)
-            .members.map((member) => (
-              <div
-                key={member.name}
-                className="bg-neutral-900 p-6 rounded-2xl shadow-lg flex flex-col items-center text-center transform transition-transform hover:scale-105"
-              >
-                <img
-                  src={member.photo}
-                  alt={member.name}
-                  className="w-52 h-52 rounded-xl mb-4 object-cover"
-                />
-                <h3 className="text-lg font-semibold mb-2 text-gray-100">{member.name}</h3>
-                <p className="text-sm text-gray-400 mb-2">{member.role}</p>
-  
-                <div className="flex space-x-4 mt-2">
-                  <a
-                    href={member.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-teal-400 hover:text-teal-500 transition-colors"
-                  >
-                    <FontAwesomeIcon icon={faLinkedin} className="w-6 h-6" />
-                  </a>
-                  <a
-                    href={member.twitter}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-purple-400 hover:text-purple-500 transition-colors"
-                  >
-                    <FontAwesomeIcon icon={faTwitter} className="w-6 h-6" />
-                  </a>
+      {employees.length > 0 ? (
+        <div className="flex flex-col items-center justify-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {employees
+              .filter((division) => division.jobTitle === activePosition)
+              .map((member) => (
+                <div
+                  key={member.email} // Ensure unique key for team members
+                  className="bg-neutral-900 p-6 rounded-2xl shadow-lg flex flex-col items-center text-center transform transition-transform hover:scale-105"
+                  aria-label={`Team member card for ${member.name}`} // Accessibility
+                >
+                  <img
+                    src={member.imageUrl}
+                    alt={member.name}
+                    className="w-52 h-52 rounded-xl mb-4 object-cover"
+                  />
+                  <h3 className="text-lg font-semibold mb-2 text-gray-100">
+                    {member.firstName} {member.lastName}
+                  </h3>
+                  <p className="text-sm text-gray-400 mb-2">{member.role}</p>
+
+                  <div className="flex space-x-4 mt-2">
+                    <a
+                      href={member.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-teal-400 hover:text-teal-500 transition-colors"
+                      title="LinkedIn profile" // Accessibility
+                    >
+                      <FontAwesomeIcon icon={faLinkedin} className="w-6 h-6" />
+                    </a>
+                    <a
+                      href={member.twitter}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-purple-400 hover:text-purple-500 transition-colors"
+                      title="Twitter profile" // Accessibility
+                    >
+                      <FontAwesomeIcon icon={faTwitter} className="w-6 h-6" />
+                    </a>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+          </div>
         </div>
-      </div>
+      ) : (
+        <p>Loading team members...</p>
+      )}
     </div>
   );
-  
 }

@@ -10,7 +10,6 @@ import NotFound from "pages/NotFound";
 import Signup from "auth/Signup";
 import Login from "auth/Login";
 
-
 export default function AppRouter() {
   return (
     <div className="page-container h-full">
