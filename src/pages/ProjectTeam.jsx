@@ -77,7 +77,7 @@ export default function ProjectTeam() {
                   </h3>
                   <p className="text-sm text-gray-400 mb-2">{member.role}</p>
 
-                  <div className="flex space-x-4 mt-2">
+                  {/* <div className="flex space-x-4 mt-2">
                     <a
                       href={member.linkedin}
                       target="_blank"
@@ -96,7 +96,7 @@ export default function ProjectTeam() {
                     >
                       <FontAwesomeIcon icon={faTwitter} className="w-6 h-6" />
                     </a>
-                  </div>
+                  </div> */}
                 </div>
               ))}
           </div>

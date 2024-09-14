@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getProjectById } from "services/ProjectsService";
+import { getProjectImagesById } from "services/GalleryService";
 import {
   UserCircleIcon,
   MapPinIcon,
@@ -8,8 +9,15 @@ import {
   CheckBadgeIcon,
   CurrencyDollarIcon,
 } from "@heroicons/react/24/solid";
+import { faCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import moment from "moment";
+import ImageGallery from "../components/ImageGallery";
 
 export default function ProjectDetails() {
   const { projectId } = useParams(); // Get project ID from URL
@@ -23,6 +31,7 @@ export default function ProjectDetails() {
         console.log(response);
         setProject(response);
       } catch (error) {
+        toast.error("Error fetching project details");
         console.error("Error fetching project details:", error);
       }
     };
@@ -30,10 +39,23 @@ export default function ProjectDetails() {
     fetchProject();
   }, [projectId]);
 
-  if (!project) return <p className="text-gray-400">Loading...</p>;
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const data = await getProjectImagesById(projectId);
+        setImages(data);
+      } catch (error) {
+        console.error("Failed to load images:", error);
+      }
+    };
+
+    fetchImages();
+  }, [projectId]);
+
+  if (!project) return <p className="text-neutral-400">Loading...</p>;
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-gray-200">
+    <div className="min-h-screen bg-black text-neutral-200">
       {/* Main Project Image */}
       <div className="relative">
         <img
@@ -49,19 +71,19 @@ export default function ProjectDetails() {
             <div className="flex flex-col md:flex-row gap-3 justify-between">
               <h1 className="text-3xl font-bold">{project.projectName}</h1>
               <div className="flex gap-3">
-                <div className="flex items-center gap-2 bg-neutral-800 text-sky-400 bg-opacity-50 px-3 py-1 rounded-full">
+                <div className="flex items-center gap-2 bg-neutral-800 text-sky-400  bg-opacity-60 px-4 py-1 rounded-full">
                   <MapPinIcon className="w-6 h-6 text-sky-500" />
-                  <div className="font-semibold text-gray-200">
+                  <div className="font-semibold text-neutral-200">
                     <div>{project.projectLocation}</div>
                   </div>
                 </div>
                 <p
                   className={`flex justify-center items-center bg-opacity-50 font-semibold px-3 py-1 rounded-full ${
                     project.projectStatus === "Completed"
-                      ? "bg-green-600 text-green-200"
+                      ? "bg-green-600 text-green-600 bg-opacity-20"
                       : project.projectStatus === "In Progress"
-                      ? "bg-sky-600 text-sky-200"
-                      : "bg-gray-600 text-gray-200"
+                      ? "bg-sky-500 text-sky-500 bg-opacity-20"
+                      : "bg-neutral-300 text-neutral-300 bg-opacity-20"
                   }`}
                 >
                   {project.projectStatus}
@@ -113,7 +135,9 @@ export default function ProjectDetails() {
 
           <button
             className={`px-4 py-2 text-sm font-semibold ${
-              activeTab === "Gallery" ? "text-sky-500 border-b-2 border-sky-500" : "text-gray-400"
+              activeTab === "Gallery"
+                ? "text-sky-500 border-b-2 border-sky-500"
+                : "text-neutral-400"
             } transition-transform duration-300 ease-in-out transform hover:scale-105`}
             onClick={() => setActiveTab("Gallery")}
           >
@@ -174,19 +198,18 @@ export default function ProjectDetails() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {project.employees.map((employee) => (
                       <div
-                        key={employee.employeeId} // Ensure unique key for team members
+                        key={employee.employeeId}
                         className="bg-neutral-900 p-6 rounded-2xl shadow-lg flex flex-col items-center text-center transform transition-transform hover:scale-105"
-                        aria-label={`Team member card for ${employee.name}`} // Accessibility
                       >
                         <img
                           src={employee.imageUrl}
                           alt={employee.firstName}
                           className="w-52 h-52 rounded-xl mb-4 object-cover"
                         />
-                        <h3 className="text-lg font-semibold mb-2 text-gray-100">
+                        <h3 className="text-lg font-semibold mb-2 text-neutral-100">
                           {employee.firstName} {employee.lastName}
                         </h3>
-                        <p className="text-sm text-gray-400">
+                        <p className="text-sm text-neutral-400">
                           {employee.jobTitle}
                         </p>
                       </div>
@@ -200,124 +223,135 @@ export default function ProjectDetails() {
           )}
 
           {activeTab === "Invoices" && (
-            <div>
+            <div className="overflow-x-auto p-3">
               {project.invoices.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-700">
-                    <thead className="bg-gray-800">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-                          Name
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-                          Description
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-                          Issue Date
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-                          Total Amount
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-                          Status
-                        </th>
+                <table className="min-w-full divide-y divide-neutral-900 ">
+                  <thead className="bg-neutral-950 text-neutral-400 text-sm font-medium text-center">
+                    <tr>
+                      <th className="px-6 py-2">Name</th>
+                      <th className="px-6 py-2 text-left">Description</th>
+                      <th className="px-6 py-2">Issue Date</th>
+                      <th className="px-6 py-2">Total Amount</th>
+                      <th className="px-6 py-2">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-neutral-900 divide-y text-center divide-neutral-600 text-sm">
+                    {project.invoices.map((invoice) => (
+                      <tr key={invoice.invoiceId}>
+                        <td className="px-6 py-4 whitespace-nowrap ">
+                          {invoice.invoiceName}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-left">
+                          {invoice.invoiceDescription}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                        {moment(invoice.issueDate).format("DD.MM.YYYY")}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          ${invoice.totalAmount}
+                        </td>
+                        <td
+                          className="px-6 py-4 whitespace-nowrap text-center"
+                        >
+                          <p className={`px-1 py-1 flex justify-center items-center gap-2 font-semibold rounded-lg ${
+                            invoice.invoiceStatus === "Paid"
+                              ? "bg-green-600 text-green-600 bg-opacity-20"
+                              : invoice.invoiceStatus === "Pending"
+                              ? "bg-yellow-600 text-yellow-600 bg-opacity-20"
+                              : "bg-red-600 text-red-600 bg-opacity-20"
+                          }`}>
+                            <FontAwesomeIcon icon={faCircle} className="w-2 h-2" />
+                          {invoice.invoiceStatus}
+                          </p>
+                          
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody className="bg-gray-700 divide-y divide-gray-600">
-                      {project.invoices.map((invoice) => (
-                        <tr key={invoice.invoiceId}>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                            {invoice.invoiceName}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                            {invoice.invoiceDescription}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                            {invoice.issueDate}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                            ${invoice.totalAmount}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                            {invoice.invoiceStatus}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                    ))}
+                  </tbody>
+                </table>
               ) : (
-                <p>No invoices available.</p>
+                <p className="text-neutral-300">No invoices available.</p>
               )}
             </div>
           )}
 
           {activeTab === "Resources" && (
-            <div>
+            <div className="overflow-x-auto">
               {project.resources.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-700">
-                    <thead className="bg-gray-800">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-                          Name
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-                          Description
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-                          Type
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-                          Unit of Measure
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-                          Unit Cost
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-                          Quantity
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-                          General Price
-                        </th>
+                <table className="min-w-full divide-y divide-neutral-900 ">
+                   <thead className="bg-neutral-950 text-neutral-400 text-sm font-medium text-center">
+                    <tr>
+                      <th className="px-6 py-3">
+                        Name
+                      </th>
+                      <th className="px-6 py-3 text-left">
+                        Description
+                      </th>
+                      <th className="px-6 py-3">
+                        Type
+                      </th>
+                      <th className="px-6 py-3">
+                        Unit of Measure
+                      </th>
+                      <th className="px-6 py-3">
+                        Unit Cost
+                      </th>
+                      <th className="px-6 py-3">
+                        Quantity
+                      </th>
+                      <th className="px-6 py-3">
+                        General Price
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-neutral-900 divide-y text-center divide-neutral-600 text-sm">
+                    {project.resources.map((resource) => (
+                      <tr key={resource.resourceId}>
+                        <td className="px-6 py-4">
+                          {resource.resourceName}
+                        </td>
+                        <td className="px-6 py-4 text-left">
+                          {resource.resourceDescription}
+                        </td>
+                        <td className="px-6 py-4">
+                          {resource.resourceType}
+                        </td>
+                        <td className="px-6 py-4">
+                          {resource.unitOfMeasure}
+                        </td>
+                        <td className="px-6 py-4">
+                          ${resource.unitCost}
+                        </td>
+                        <td className="px-6 py-4">
+                          {resource.quantity}
+                        </td>
+                        <td className="px-6 py-4">
+                          ${resource.generalPrice}
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody className="bg-gray-700 divide-y divide-gray-600">
-                      {project.resources.map((resource) => (
-                        <tr key={resource.resourceId}>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                            {resource.resourceName}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                            {resource.resourceDescription}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                            {resource.resourceType}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                            {resource.unitOfMeasure}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                            ${resource.unitCost}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                            {resource.quantity}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                            ${resource.generalPrice}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                    ))}
+                  </tbody>
+                </table>
               ) : (
-                <p>No resources available.</p>
+                <p className="text-neutral-300">No resources available.</p>
               )}
+            </div>
+          )}
+
+          {activeTab === "Gallery" && (
+            <div>
+              <ImageGallery />
             </div>
           )}
         </div>
       </div>
+      <ToastContainer
+        position="bottom-center"
+        autoClose={3000}
+        limit={3}
+        theme="dark"
+        stacked
+      />
     </div>
   );
 }

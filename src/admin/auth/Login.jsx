@@ -42,7 +42,7 @@ const Login = () => {
         user.getIdToken().then((token) => {
           console.log("Firebase ID Token:", token);  // Log the token to verify
           localStorage.setItem('firebaseToken', token);
-          navigate("/home");
+          navigate("/admin/projects");
         })
       })
       .catch((error) => {
@@ -81,7 +81,7 @@ const Login = () => {
           console.log("Firebase ID Token:", token);  // Log the token to verify
           localStorage.setItem('firebaseToken', token);
           console.log("Google Login Success:", user);
-          navigate("/home");
+          navigate("/admin/projects");
         })
     
       })
@@ -98,12 +98,12 @@ const Login = () => {
           <h1 className="text-2xl text-center justify-center font-bold text-white pb-4">
             Sign in
           </h1>
-          <div className="text-white border bg-gradient-to-r from-teal-600 via-teal-500 to-yellow-400 rounded-2xl p-0.5">
-            <span className="flex justify-center gap-3 w-full bg-neutral-950 rounded-2xl p-1">
+          <button onClick={handleGoogleLogin} className="w-full text-white border bg-gradient-to-r from-teal-600 via-teal-500 to-yellow-400 rounded-2xl p-0.5">
+            <span className="flex items-center justify-center gap-3 w-full bg-neutral-950 rounded-2xl p-1">
               <FontAwesomeIcon icon={faGoogle} className="w-5 h-5 p-2" />
-              <button onClick={handleGoogleLogin}>Sign in with Google</button>
+              <p className="font-bold">Sign in with Google</p>
             </span>
-          </div>
+          </button>
           <div className="text-lg font-semibold flex justify-center text-white p-3">
             or
           </div>

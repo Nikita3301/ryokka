@@ -8,7 +8,6 @@ import { CalendarDateRangeIcon, MapPinIcon } from "@heroicons/react/24/solid";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import moment from "moment";
 
-
 export default function ProjectsOverview() {
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
@@ -132,70 +131,69 @@ export default function ProjectsOverview() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-  {filteredProjects.map((project) => (
-    <div
-      key={project.projectId}
-      className="bg-neutral-900 shadow-lg rounded-lg overflow-hidden flex flex-col"
-    >
-      <img
-        src={project.mainImageUrl}
-        alt={project.projectName}
-        loading="lazy"
-        className="w-full h-64 object-cover"
-      />
-      <div className="p-6 flex-1 flex flex-col">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-semibold text-gray-100 px-2">
-            {project.projectName}
-          </h2>
-          <span
-            className={`inline-block px-3 py-1 text-xs text-center font-semibold rounded-full ${
-              project.projectStatus === "Completed"
-                ? "bg-green-600 text-green-100"
-                : project.projectStatus === "In Progress"
-                ? "bg-sky-600 text-yellow-100"
-                : "bg-gray-600 text-gray-100"
-            }`}
+        {filteredProjects.map((project) => (
+          <div
+            key={project.projectId}
+            className="bg-neutral-900 shadow-lg rounded-lg overflow-hidden flex flex-col"
           >
-            {project.projectStatus}
-          </span>
-        </div>
-        {/* Show only two lines of description: line-clamp-2*/}
-        <p className="text-gray-400 mb-4 line-clamp-2"> {}
-          <strong>Description:</strong> {project.projectDescription}
-        </p>
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-4">
-            <MapPinIcon className="w-6 h-6 text-sky-500" />
-            <div className="text-gray-400">
-              <strong>Location:</strong>
-              <div>{project.projectLocation}</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <CalendarDateRangeIcon className="w-6 h-6 text-amber-400" />
-            <div className="text-gray-400">
-              <strong>Dates:</strong>
-              <div>
-                {moment(project.startDate).format("MM.YYYY")} -{" "}
-                {moment(project.endDate).format("MM.YYYY")}
+            <img
+              src={project.mainImageUrl}
+              alt={project.projectName}
+              loading="lazy"
+              className="w-full h-64 object-cover"
+            />
+            <div className="p-6 flex-1 flex flex-col">
+              <div className="flex justify-between items-center mb-4 gap-3">
+                <h2 className="text-2xl font-semibold text-gray-100">
+                  {project.projectName}
+                </h2>
+                <span
+                  className={`inline-block px-3 py-1 whitespace-nowrap text-sm text-center font-semibold rounded-full ${
+                    project.projectStatus === "Completed"
+                      ? "bg-green-600 text-green-600 bg-opacity-20"
+                      : project.projectStatus === "In Progress"
+                      ? "bg-sky-500 text-sky-500 bg-opacity-20"
+                      : "bg-neutral-300 text-neutral-300 bg-opacity-20"
+                  }`}
+                >
+                  {project.projectStatus}
+                </span>
+              </div>
+              {/* Show only two lines of description: line-clamp-2*/}
+              <p className="text-gray-400 mb-4 line-clamp-2">
+                <strong>Description:</strong> {project.projectDescription}
+              </p>
+              <div className="flex justify-between items-center gap-4 mb-4">
+                <div className="flex items-center gap-4">
+                  <MapPinIcon className="w-6 h-6 text-sky-500" />
+                  <div className="text-gray-400">
+                    <strong>Location:</strong>
+                    <div>{project.projectLocation}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <CalendarDateRangeIcon className="w-6 h-6 text-amber-400" />
+                  <div className="text-gray-400">
+                    <strong>Dates:</strong>
+                    <div className="whitespace-nowrap ">
+                      {moment(project.startDate).format("MM.YYYY")} -{" "}
+                      {moment(project.endDate).format("MM.YYYY")}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-auto">
+                <button
+                  onClick={() => handleViewDetails(project.projectId)}
+                  className="w-full bg-teal-600 text-gray-100 py-2 px-4 rounded-lg hover:bg-teal-700 transition-colors"
+                >
+                  View Details
+                </button>
               </div>
             </div>
           </div>
-        </div>
-        <div className="mt-auto">
-          <button
-            onClick={() => handleViewDetails(project.projectId)}
-            className="w-full bg-teal-600 text-gray-100 py-2 px-4 rounded-lg hover:bg-teal-700 transition-colors"
-          >
-            View Details
-          </button>
-        </div>
+        ))}
       </div>
-    </div>
-  ))}
-</div>
-
     </div>
   );
 }

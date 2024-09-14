@@ -48,7 +48,7 @@ const Signup = () => {
       const token = credential.accessToken;
       const user = result.user;
 
-      navigate("/home");
+      navigate("/admin/projects");
 
       console.log(user, token);
     } catch (error) {
@@ -104,12 +104,12 @@ const Signup = () => {
             Create new account
           </h1>
 
-          <div className="text-white border bg-gradient-to-r from-teal-600 via-teal-500 to-yellow-400 rounded-2xl p-0.5">
-            <span className="flex justify-center gap-3 w-full bg-neutral-950 rounded-2xl p-1">
+          <button onClick={SignUpWithGoogle} className="w-full text-white border bg-gradient-to-r from-teal-600 via-teal-500 to-yellow-400 rounded-2xl p-0.5">
+            <span className="flex items-center justify-center gap-3 w-full bg-neutral-950 rounded-2xl p-1">
               <FontAwesomeIcon icon={faGoogle} className="w-5 h-5 p-2" />
-              <button onClick={SignUpWithGoogle}>Sign up with Google</button>
+              <p className="font-bold">Sign up with Google</p>
             </span>
-          </div>
+          </button>
           <div className="text-lg font-semibold flex justify-center text-white p-3">
             or
           </div>

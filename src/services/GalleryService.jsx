@@ -13,3 +13,14 @@ export const getAllProjectImages = async () => {
       throw error;
     }
   };
+
+  export const getProjectImagesById = async (projectId) => {
+    try {
+      const response = await axiosInstance.get(`${API_BASE_URL}/${projectId}`);
+      console.log(response.data)
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      throw error;
+    }
+  };
