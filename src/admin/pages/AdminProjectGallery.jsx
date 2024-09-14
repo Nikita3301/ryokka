@@ -9,24 +9,35 @@ import {
   PlusIcon,
   ArrowLongRightIcon,
   ExclamationCircleIcon,
-  CloudArrowUpIcon
+  CloudArrowUpIcon,
+  StarIcon as StarSolidIcon,
+  PhotoIcon,
+  TrashIcon,
 } from "@heroicons/react/24/solid";
 import {
   ChevronUpIcon,
   ArrowTopRightOnSquareIcon,
   DocumentTextIcon,
+  StarIcon,
+  ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 
 import moment from "moment";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 import { faCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { getProjectImagesById } from "services/GalleryService";
+import {
+  getProjectImagesById,
+  setMainImage,
+  uploadImages,
+  deleteImageById,
+} from "services/GalleryService";
 import { getProjectById } from "services/ProjectsService";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ImageGallery from "components/ImageGallery";
 
 // Skeleton loader component
 const Skeleton = () => {
@@ -40,17 +51,45 @@ const Skeleton = () => {
   );
 };
 
+const DeleteModal = ({ isOpen, onClose, onDelete }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-neutral-900 text-white p-6 rounded-lg flex flex-col justify-center items-center gap-2">
+        <ExclamationTriangleIcon className="size-10 rounded-lg p-1 border-red-800 bg-red-600 text-red-500 bg-opacity-30" />
+        <h2 className="text-lg text-center font-semibold">Confirm Delete</h2>
+        <p className="text-neutral-500 pb-6">
+          Are you sure you want to delete this item?
+        </p>
+        <button
+          onClick={onDelete}
+          className="w-56 px-2 py-1.5 font-semibold border-2 border-red-800 bg-red-600 text-red-500 bg-opacity-30 rounded hover:bg-opacity-50"
+        >
+          Delete
+        </button>
+        <button
+          onClick={onClose}
+          className="w-56 px-2 py-1.5 font-semibold border-2 border-neutral-700 bg-neutral-600 text-neutral-500 bg-opacity-30 rounded hover:bg-opacity-50"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+};
+
 export default function AdminProjectGallery() {
   const { projectId } = useParams();
 
-  //   const navigate = useNavigate();
-  //   const path = window.location.pathname;
-  //   const segments = path.split("/").filter(Boolean);
-  //   const projectId = segments[1];
-
   const [images, setImages] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDelItem, setSelectedDelItem] = useState(null);
+  const [isDelModalOpen, setIsDeleteModalOpen] = useState(false);
+
   const [project, setProject] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [loadingImages, setLoadingImages] = useState(true);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [projectLoading, setProjectLoading] = useState(true);
   const [projectError, setProjectError] = useState(null);
@@ -60,42 +99,63 @@ export default function AdminProjectGallery() {
   // Group images by year and sort years in reverse order
   const groupedImagesByYear = {};
 
+  const fetchImages = async () => {
+    try {
+      const data = await getProjectImagesById(projectId);
+      console.log("projectImg", data, projectId);
+      setImages(data);
+    } catch (error) {
+      toast.error("Failed to load images.");
+      console.error(error);
+    } finally {
+      setLoadingImages(false);
+    }
+  };
+
+  const fetchProject = async () => {
+    try {
+      const response = await getProjectById(projectId);
+      setProject(response);
+      console.log("proj", response, projectId);
+    } catch (error) {
+      setProjectError("Failed to load project details.");
+      console.error("Error fetching project details:", error);
+    } finally {
+      setProjectLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!projectId) {
       // Postpone the requests until projectId is available
       console.log("Waiting for projectId...");
       return;
     }
-
-    const fetchImages = async () => {
-      try {
-        const data = await getProjectImagesById(projectId);
-        console.log("projectImg", data, projectId);
-        setImages(data);
-      } catch (error) {
-        toast.error("Failed to load images.");
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const fetchProject = async () => {
-      try {
-        const response = await getProjectById(projectId);
-        setProject(response);
-        console.log("proj", response, projectId);
-      } catch (error) {
-        setProjectError("Failed to load project details.");
-        console.error("Error fetching project details:", error);
-      } finally {
-        setProjectLoading(false);
-      }
-    };
-
     fetchImages();
     fetchProject();
   }, [projectId]);
+
+  const handleSetMainImage = async (imageId) => {
+    try {
+      await setMainImage(imageId, projectId);
+      // Update the images state to reflect the new main image
+      setImages((prevImages) =>
+        prevImages.map((img) => ({
+          ...img,
+          isMainImage: img.imageId === imageId,
+        }))
+      );
+      const mainImage = images.find((img) => img.imageId === imageId);
+      if (mainImage) {
+        setProject((prevProject) => ({
+          ...prevProject,
+          mainImageUrl: mainImage.imageUrl,
+        }));
+      }
+    } catch (error) {
+      console.error("Failed to set main image:", error);
+    }
+  };
 
   // Group and sort images by year
   images.forEach((image) => {
@@ -109,8 +169,16 @@ export default function AdminProjectGallery() {
   });
 
   const handleFileChange = (event) => {
-    const files = Array.from(event.target.files); // Convert FileList to array
-    setSelectedFiles(files);
+    const files = Array.from(event.target.files);
+    console.log("files", files);
+
+    // Create a new array with file objects including the date as null initially
+    const filesWithDates = files.map((file) => ({
+      file,
+      date: null,
+    }));
+
+    setSelectedFiles(filesWithDates);
 
     const previews = files.map((file) => URL.createObjectURL(file));
     setImagePreviews(previews);
@@ -122,18 +190,34 @@ export default function AdminProjectGallery() {
       return;
     }
 
+    const filesWithoutDate = selectedFiles.some((file) => !file.date);
+    if (filesWithoutDate) {
+      toast.error("Please provide a date for each image.");
+      return;
+    }
+
     try {
+      toast.info("Uploading images!");
       const formData = new FormData();
-      selectedFiles.forEach((file) => {
-        formData.append("images", file);
+      console.log("selectedFiles", selectedFiles);
+      selectedFiles.forEach((fileObj, index) => {
+        formData.append(`files`, fileObj.file);
+        formData.append(`dates`, fileObj.date.toISOString().split("T")[0]);
       });
 
-      await uploadProjectImages(projectId, formData); // API call to upload images
+      console.log("form", Object.fromEntries(formData.entries()));
+
+      await uploadImages(formData, projectId);
+      setLoading(true);
+
       toast.success("Images uploaded successfully!");
-      setSelectedFiles([]); // Clear file input after successful upload
+      setSelectedFiles([]); // Clear file input
       setImagePreviews([]); // Clear preview URLs
+      fetchImages();
+      setLoading(false);
     } catch (error) {
       toast.error("Failed to upload images.");
+      setLoading(false);
     }
   };
   // Sort years in reverse order
@@ -145,6 +229,35 @@ export default function AdminProjectGallery() {
 
   const handleCloseModal = () => {
     setSelectedImage(null);
+  };
+
+  const handleDeleteClick = (item) => {
+    setSelectedDelItem(item);
+    if(item.isMainImage){
+      toast.error("Select another main image before deleting!");
+    }
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if(selectedDelItem.isMainImage){
+      toast.error("Select another main image before deleting!");
+    }else{
+      try {
+        await deleteImageById(selectedDelItem.imageId);
+        toast.success("Image deleted successfully.");
+        setImages(images.filter((item) => item !== selectedDelItem));
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to delete the image.");
+      }
+      setIsDeleteModalOpen(false);
+    }
+    
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
   };
 
   return (
@@ -273,54 +386,192 @@ export default function AdminProjectGallery() {
       </div>
 
       {/* Add More Photos Button */}
-      <div className="mt-4 flex justify-center items-center">
-        <input
-          type="file"
-          multiple
-          accept="image/*"
-          onChange={handleFileChange}
-          className="hidden"
-          id="upload-input"
-        />
-        <label
-          htmlFor="upload-input"
-            className="flex justify-center items-center gap-2 w-fit border-2 border-teal-800 bg-teal-600 text-teal-500 bg-opacity-30 hover:bg-opacity-50 px-6 py-2 rounded-lg"
-        >
-              <PlusIcon className="w-5 h-5 inline" />
-          Add More Photos
-        </label>
+      <div className="mt-4 flex justify-center items-center gap-5">
+        <h1 className="text-2xl text-center font-semibold">
+          Upload new photos
+        </h1>
       </div>
-
-      {/* Preview Selected Images */}
-      {imagePreviews.length > 0 && (
-        <div className="mt-4 flex flex-wrap justify-center gap-4">
-          {imagePreviews.map((preview, index) => (
-            <div key={index} className="relative">
-              <img
-                src={preview}
-                alt={`Preview ${index}`}
-                className="size-64 object-cover rounded-lg shadow-md"
-              />
-              {/* Optionally, add a delete button to remove a selected image */}
+      <div className="flex items-center w-full gap-4 p-4">
+        {/* Add More Photos Button */}
+        <div
+          className={`flex items-center justify-center ${
+            selectedFiles.length === 0 ? "w-full" : ""
+          }`}
+        >
+          <div className="p-4 flex flex-col justify-center">
+            <div className="size-64 rounded-xl object-cover border-2 border-teal-500 bg-neutral-800 flex flex-col items-center justify-center">
+              <PhotoIcon className="size-20" />
             </div>
-          ))}
+            <div className="flex justify-center items-center p-4">
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+                id="upload-input"
+              />
+              <label
+                htmlFor="upload-input"
+                className="flex justify-center items-center gap-2 w-fit border-2 border-teal-800 bg-teal-600 text-teal-500 bg-opacity-30 hover:bg-opacity-50 px-6 py-2 rounded-lg"
+              >
+                <PlusIcon className="w-5 h-5 inline" />
+                Add More Photos
+              </label>
+            </div>
+          </div>
         </div>
-      )}
+
+        <div
+          className={`w-full h-full ${
+            selectedFiles.length === 0 ? "hidden" : ""
+          }`}
+        >
+          <div className="flex items-center gap-4 justify-center overflow-x-auto p-4">
+            {selectedFiles.map((fileObj, index) => (
+              <div key={index} className="flex flex-col items-center">
+                <img
+                  src={imagePreviews[index]}
+                  alt={`Preview ${index}`}
+                  className="size-64 object-cover rounded-lg shadow-md mb-2"
+                />
+                <DatePicker
+                  showIcon
+                  icon={
+                    <CalendarDateRangeIcon className="size-5 text-teal-500" />
+                  }
+                  className="flex text-center py-1.5 font-semibold bg-neutral-800 rounded-md border-2 border-teal-400 text-gray-100 focus:outline-none"
+                  selected={fileObj.date}
+                  onChange={(date) =>
+                    setSelectedFiles((prevFiles) =>
+                      prevFiles.map((file, i) =>
+                        i === index ? { ...file, date: date } : file
+                      )
+                    )
+                  }
+                  dateFormat="dd/MM/yyyy"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* Show Upload Button when Files are Selected */}
       {selectedFiles.length > 0 && (
         <div className="mt-4 flex justify-center">
           <button
             onClick={handleUpload}
-             className="flex justify-center items-center gap-2 w-fit border-2 border-teal-800 bg-teal-600 text-teal-500 bg-opacity-30 hover:bg-opacity-50 px-6 py-2 rounded-lg"
+            className="flex justify-center items-center gap-2 w-fit border-2 border-sky-800 bg-sky-600 text-sky-500 bg-opacity-30 hover:bg-opacity-50 px-6 py-2 rounded-lg"
           >
-<CloudArrowUpIcon className="size-5 inline"/>
+            <CloudArrowUpIcon className="size-5 inline" />
             Upload Selected Photos
           </button>
         </div>
       )}
 
-      <ImageGallery projectId={projectId} />
+      {/* <ImageGallery projectId={projectId} /> */}
+
+      <div className="flex flex-col h-full bg-neutral-950 w-full text-gray-200">
+        {sortedYears.map((year) => (
+          <div key={year} className="p-6">
+            <h2 className="text-2xl font-bold text-gray-100 mb-4">{year}</h2>
+            {/* Grid layout for gallery items */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 p-6">
+              {loadingImages
+                ? Array(9)
+                    .fill(0)
+                    .map((_, index) => <Skeleton key={index} />)
+                : groupedImagesByYear[year].map((item) => (
+                    <div
+                      key={item.imageId}
+                      className="relative bg-neutral-800 rounded-lg shadow-lg overflow-hidden cursor-pointer transform transition-transform duration-500 hover:shadow-xl"
+                      onClick={() => handleImageClick(item)}
+                    >
+                      <img
+                        src={item.imageUrl}
+                        alt={item.projectName}
+                        className="w-full h-[500px] object-cover transition-opacity duration-500 hover:opacity-90"
+                        loading="lazy"
+                      />
+                      <div className="absolute top-0 right-0 bg-neutral-950 rounded-bl-xl rounded-tr pb-2 pl-2">
+                        {item.isMainImage ? (
+                          <div className="group flex gap-2 items-center bg-teal-600 text-teal-200 bg-opacity-70  rounded-lg px-3 py-1.5 cursor-default">
+                            <p className="font-semibold ">Main image</p>
+                            <StarSolidIcon className="size-6" />
+                          </div>
+                        ) : (
+                          <button
+                            className="group flex gap-2 items-center bg-teal-600 text-teal-200 bg-opacity-70 hover:bg-opacity-50 rounded-lg px-3 py-1.5"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSetMainImage(item.imageId);
+                            }}
+                          >
+                            <p className="font-semibold ">Set as main</p>
+                            <StarIcon className="size-6 group-hover:hidden" />
+                            <StarSolidIcon className="size-6 hidden group-hover:flex" />
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="absolute bottom-0 right-0 bg-neutral-950 rounded-tl-xl rounded-br pt-2 pl-2">
+                        <button
+                          className="flex gap-2 items-center bg-red-600 text-red-200 bg-opacity-70 hover:bg-opacity-50 rounded-lg px-3 py-1.5"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteClick(item);
+                          }}
+                        >
+                          <p className="font-semibold ">Delete</p>
+                          <TrashIcon className="size-6 group-hover:flex" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+            </div>
+          </div>
+        ))}
+
+        {/* Modal for selected image */}
+        {selectedImage && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-10"
+            onClick={handleCloseModal}
+          >
+            <div
+              className="relative max-w-7xl bg-neutral-900 rounded-lg border-2 border-teal-500"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div
+                className="absolute top-4 right-4 bg-black rounded-full border-2 border-teal-500 cursor-pointer p-1 z-10"
+                onClick={handleCloseModal}
+              >
+                <XMarkIcon className="h-8 w-8 text-teal-500" />
+              </div>
+
+              {/* Modal content */}
+              <div className="flex flex-col lg:flex-row max-h-[95vh]">
+                {/* Image */}
+                <div className="relative">
+                  <img
+                    src={selectedImage.imageUrl}
+                    alt={selectedImage.projectName}
+                    className="max-w-full max-h-[80vh] object-contain rounded-lg"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Delete Modal */}
+      <DeleteModal
+        isOpen={isDelModalOpen}
+        onClose={handleCloseDeleteModal}
+        onDelete={handleDeleteConfirm}
+      />
 
       <ToastContainer
         position="bottom-center"
