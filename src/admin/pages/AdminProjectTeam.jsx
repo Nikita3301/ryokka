@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTwitter } from "@fortawesome/free-brands-svg-icons";
-import { faLinkedin } from "@fortawesome/free-brands-svg-icons";
 import {
   PencilIcon,
   TrashIcon,
@@ -9,9 +6,16 @@ import {
   CloudArrowUpIcon,
   PhotoIcon,
 } from "@heroicons/react/24/solid";
-import { handleFileChange } from "services/handleFileChange";
+import { DeleteModal } from "utils/DeleteModal";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-import { getAllEmployees } from "services/ProjectTeamService";
+import {
+  getAllEmployees,
+  deleteEmployeeById,
+  createEmployee,
+  updateEmployee,
+} from "services/EmployeeService";
 
 export default function AdminProjectTeam() {
   const [employees, setEmployees] = useState([]);
@@ -25,7 +29,7 @@ export default function AdminProjectTeam() {
     phoneNumber: "",
   });
   const [editingId, setEditingId] = useState(null);
-  const [editedEmployee, setEditedEmployee] = useState({
+  const [updatedEmployee, setUpdatedEmployee] = useState({
     imageUrl: "",
     firstName: "",
     lastName: "",
@@ -34,25 +38,12 @@ export default function AdminProjectTeam() {
     phoneNumber: "",
   });
 
-  //   const handleFileChange = (e, employeeId) => {
-  //     const file = e.target.files[0];
-  //     if (file) {
-  //       const reader = new FileReader();
-  //       reader.onloadend = () => {
-  //         setEmployees((prevEmployees) =>
-  //           prevEmployees.map((employee) =>
-  //             employee.employeeId === employeeId
-  //               ? { ...employee, imageUrl: reader.result }
-  //               : employee
-  //           )
-  //         );
-  //       };
-  //       reader.readAsDataURL(file);
-  //     }
-  //   };
+  // Delete values
+  const [selectedDelItem, setSelectedDelItem] = useState(null);
+  const [isDelModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  // Add a new team member
-  const addTeamMember = () => {
+  // Add a new employee
+  const addTeamMember = async () => {
     if (
       newEmployee.imageUrl &&
       newEmployee.firstName &&
@@ -61,49 +52,120 @@ export default function AdminProjectTeam() {
       newEmployee.email &&
       newEmployee.phoneNumber
     ) {
-      setEmployees([...employees, { ...newEmployee }]);
-      setNewEmployee({
-        imageUrl: "",
-        firstName: "",
-        lastName: "",
-        jobTitle: "",
-        email: "",
-        phoneNumber: "",
-      });
-      console.log(newEmployee);
-      setImagePreviewUrl(null);
+      try {
+        const formData = new FormData();
+
+        formData.append("firstName", newEmployee.firstName);
+        formData.append("lastName", newEmployee.lastName);
+        formData.append("jobTitle", newEmployee.jobTitle);
+        formData.append("phoneNumber", newEmployee.phoneNumber);
+        formData.append("email", newEmployee.email);
+        formData.append("imageFile", newEmployee.imageUrl);
+        console.log("adding", Object.fromEntries(formData.entries()));
+
+        const createdEmployee = await createEmployee(formData);
+        setEmployees([...employees, createdEmployee]);
+        setNewEmployee({
+          imageUrl: "",
+          firstName: "",
+          lastName: "",
+          jobTitle: "",
+          email: "",
+          phoneNumber: "",
+        });
+
+        setImagePreviewUrl(null);
+        console.log(newEmployee);
+        toast.success("Employee added successfully!");
+      } catch (error) {
+        console.log("error", error);
+        toast.error("Failed to add employee.");
+      }
     } else {
       console.log("error", newEmployee);
+      toast.error("Please fill out all fields.");
     }
   };
 
-  const startEditing = (member) => {
-    setEditingId(member.employeeId);
-    setEditedEmployee(member);
+  // Update employee
+  const startEditing = (employee) => {
+    setEditingId(employee.employeeId);
+    setUpdatedEmployee(employee);
   };
 
-  // Save edited team member
-  const saveEdit = () => {
-    setEmployees(
-      employees.map((member) =>
-        member.employeeId === editingId ? editedEmployee : member
-      )
-    );
-    setEditingId(null);
-    setEditedEmployee({
-      imageUrl: "",
-      firstName: "",
-      lastName: "",
-      jobTitle: "",
-      email: "",
-      phoneNumber: "",
-    });
-    console.log(editedEmployee);
+  const saveUpdatedEmployee = async () => {
+    if (
+      editingId &&
+      updatedEmployee.imageUrl &&
+      updatedEmployee.firstName &&
+      updatedEmployee.lastName &&
+      updatedEmployee.jobTitle &&
+      updatedEmployee.email &&
+      updatedEmployee.phoneNumber
+    ) {
+      try {
+        const formData = new FormData();
+        formData.append("employeeId", editingId);
+        formData.append("firstName", updatedEmployee.firstName);
+        formData.append("lastName", updatedEmployee.lastName);
+        formData.append("jobTitle", updatedEmployee.jobTitle);
+        formData.append("phoneNumber", updatedEmployee.phoneNumber);
+        formData.append("email", updatedEmployee.email);
+        console.log("imageUrl", updatedEmployee.imageUrl);
+        formData.append("imageFile", updatedEmployee.imageUrl);
+        console.log("edit", Object.fromEntries(formData.entries()));
+
+        const updatedEmployeeResponse = await updateEmployee(formData);
+        console.log("edited", updatedEmployeeResponse);
+        setEmployees(
+          employees.map((employee) =>
+            employee.employeeId === editingId
+              ? updatedEmployeeResponse
+              : employee
+          )
+        );
+        console.log("employees", employees);
+        setEditingId(null);
+        setUpdatedEmployee({
+          imageUrl: "",
+          firstName: "",
+          lastName: "",
+          jobTitle: "",
+          email: "",
+          phoneNumber: "",
+        });
+        toast.success("Employee updated successfully!");
+      } catch (error) {
+        console.log("error", error);
+        toast.error("Failed to update employee.");
+      }
+    } else {
+      toast.error("Please fill out all fields.");
+    }
   };
 
-  // Remove a team member
-  const removeTeamMember = (id) => {
-    setEmployees(teamMembers.filter((member) => member.employeeId !== id));
+  // Delete modal handlers
+  const handleDeleteClick = (item) => {
+    setSelectedDelItem(item);
+    setIsDeleteModalOpen(true);
+  };
+  const handleDeleteConfirm = async () => {
+    try {
+      await deleteEmployeeById(selectedDelItem.employeeId);
+      toast.success("Employee deleted successfully.");
+      setEmployees(
+        employees.filter(
+          (employee) => employee.employeeId !== selectedDelItem.employeeId
+        )
+      );
+    } catch (error) {
+      console.log("err", error);
+      toast.error("Failed to delete employee.");
+    }
+    setIsDeleteModalOpen(false);
+  };
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
   };
 
   useEffect(() => {
@@ -120,7 +182,7 @@ export default function AdminProjectTeam() {
 
   return (
     <div className="min-h-screen bg-neutral-950 p-6 text-gray-200">
-      {/* Add Team Member Form */}
+      {/* Add Team employee Form */}
       <div className="bg-neutral-900 p-4 rounded-lg mb-8">
         <h2 className="text-2xl font-semibold mb-6 text-center">
           Add new employee
@@ -140,20 +202,20 @@ export default function AdminProjectTeam() {
             )}
 
             <label
-              for="doc"
-              class="flex items-center px-6 py-1.5 gap-2 rounded-lg bg-neutral-800 cursor-pointer select-none whitespace-nowrap hover:scale-105 duration-500"
+              htmlFor="newEmployeeImage"
+              className="flex items-center px-6 py-1.5 gap-2 rounded-lg bg-neutral-800 cursor-pointer select-none whitespace-nowrap hover:scale-105 duration-500"
             >
               <CloudArrowUpIcon className="size-9 text-teal-500" />
               <div>
-                <h4 class="text-base font-semibold text-teal-500">
+                <h4 className="text-base font-semibold text-teal-500">
                   Upload a file
                 </h4>
-                <span class="text-sm text-gray-500">Max 10 MB</span>
+                <span className="text-sm text-gray-500">Max 10 MB</span>
               </div>
               <input
                 type="file"
-                id="doc"
-                name="doc"
+                id="newEmployeeImage"
+                name="newEmployeeImage"
                 accept="png, jpg"
                 onChange={(e) => {
                   const file = e.target.files[0];
@@ -163,7 +225,7 @@ export default function AdminProjectTeam() {
                   }
                   setNewEmployee({
                     ...newEmployee,
-                    imageUrl: handleFileChange(e),
+                    imageUrl: e.target.files[0],
                   });
                 }}
                 hidden
@@ -277,7 +339,7 @@ export default function AdminProjectTeam() {
                 onClick={addTeamMember}
                 className="flex justify-center items-center gap-2 w-fit border-2 border-teal-800 bg-teal-600 text-teal-500 bg-opacity-30 hover:bg-opacity-50 px-6 py-2 rounded-lg"
               >
-                <PlusIcon className="w-5 h-5 inline" /> Add Member
+                <PlusIcon className="w-5 h-5 inline" /> Add employee
               </button>
             </div>
           </div>
@@ -298,35 +360,37 @@ export default function AdminProjectTeam() {
               <th className="text-center">Actions</th>
             </tr>
           </thead>
-          <tbody className=" bg-neutral-900 divide-y divide-neutral-600 text-sm text-left">
-            {employees.map((member) => (
+          <tbody className="bg-neutral-900 divide-y divide-neutral-600 text-sm text-left">
+            {employees.map((employee) => (
               <tr
-                key={member.employeeId}
+                key={employee.employeeId}
                 className="border-b border-neutral-700 *:p-2"
               >
                 <td className="flex justify-center">
-                  {editingId === member.employeeId ? (
+                  {editingId === employee.employeeId ? (
                     <div className="h-20 w-full p-2">
                       <label
-                        for="doc"
-                        class="flex items-center p-2 gap-2 rounded-lg bg-neutral-800 cursor-pointer whitespace-nowrap select-none"
+                        htmlFor="updateEmployeeImage"
+                        className="flex items-center p-2 gap-2 rounded-lg bg-neutral-800 cursor-pointer whitespace-nowrap select-none"
                       >
                         <CloudArrowUpIcon className="size-6 text-teal-500" />
                         <div>
-                          <h4 class="text-sm font-semibold text-teal-500">
+                          <h4 className="text-sm font-semibold text-teal-500">
                             Upload a file
                           </h4>
-                          <span class="text-xs text-gray-500">Max 10 MB</span>
+                          <span className="text-xs text-gray-500">
+                            Max 10 MB
+                          </span>
                         </div>
                         <input
                           type="file"
-                          id="doc"
-                          name="doc"
+                          id="updateEmployeeImage"
+                          name="updateEmployeeImage"
                           accept="png, jpg"
                           onChange={(e) =>
-                            setEditedEmployee({
-                              ...editedEmployee,
-                              imageUrl: handleFileChange(e),
+                            setUpdatedEmployee({
+                              ...updatedEmployee,
+                              imageUrl: e.target.files[0],
                             })
                           }
                           hidden
@@ -336,103 +400,103 @@ export default function AdminProjectTeam() {
                   ) : (
                     <div>
                       <img
-                        src={member.imageUrl}
-                        alt={member.firstName}
+                        src={employee.imageUrl}
+                        alt={employee.firstName}
                         className="w-20 h-20 rounded-full object-cover"
                       />
                     </div>
                   )}
                 </td>
                 <td>
-                  {editingId === member.employeeId ? (
+                  {editingId === employee.employeeId ? (
                     <input
                       type="text"
-                      value={editedEmployee.firstName}
+                      value={updatedEmployee.firstName}
                       onChange={(e) =>
-                        setEditedEmployee({
-                          ...editedEmployee,
+                        setUpdatedEmployee({
+                          ...updatedEmployee,
                           firstName: e.target.value,
                         })
                       }
                       className="bg-neutral-800 p-2 rounded-md text-white focus:outline-none"
                     />
                   ) : (
-                    member.firstName
+                    employee.firstName
                   )}
                 </td>
                 <td>
-                  {editingId === member.employeeId ? (
+                  {editingId === employee.employeeId ? (
                     <input
                       type="text"
-                      value={editedEmployee.lastName}
+                      value={updatedEmployee.lastName}
                       onChange={(e) =>
-                        setEditedEmployee({
-                          ...editedEmployee,
+                        setUpdatedEmployee({
+                          ...updatedEmployee,
                           lastName: e.target.value,
                         })
                       }
                       className="bg-neutral-800 p-2 rounded-md text-white focus:outline-none"
                     />
                   ) : (
-                    member.lastName
+                    employee.lastName
                   )}
                 </td>
                 <td>
-                  {editingId === member.employeeId ? (
+                  {editingId === employee.employeeId ? (
                     <input
                       type="text"
-                      value={editedEmployee.jobTitle}
+                      value={updatedEmployee.jobTitle}
                       onChange={(e) =>
-                        setEditedEmployee({
-                          ...editedEmployee,
+                        setUpdatedEmployee({
+                          ...updatedEmployee,
                           jobTitle: e.target.value,
                         })
                       }
                       className="bg-neutral-800 p-2 rounded-md text-white focus:outline-none"
                     />
                   ) : (
-                    member.jobTitle
+                    employee.jobTitle
                   )}
                 </td>
                 <td>
-                  {editingId === member.employeeId ? (
+                  {editingId === employee.employeeId ? (
                     <input
                       type="email"
-                      value={editedEmployee.email}
+                      value={updatedEmployee.email}
                       onChange={(e) =>
-                        setEditedEmployee({
-                          ...editedEmployee,
+                        setUpdatedEmployee({
+                          ...updatedEmployee,
                           email: e.target.value,
                         })
                       }
                       className="bg-neutral-800 p-2 rounded-md text-white focus:outline-none"
                     />
                   ) : (
-                    member.email
+                    employee.email
                   )}
                 </td>
                 <td>
-                  {editingId === member.employeeId ? (
+                  {editingId === employee.employeeId ? (
                     <input
                       type="phoneNumber"
-                      value={editedEmployee.phoneNumber}
+                      value={updatedEmployee.phoneNumber}
                       onChange={(e) =>
-                        setEditedEmployee({
-                          ...editedEmployee,
+                        setUpdatedEmployee({
+                          ...updatedEmployee,
                           phoneNumber: e.target.value,
                         })
                       }
                       className="bg-neutral-800 p-2 rounded-md text-white focus:outline-none"
                     />
                   ) : (
-                    member.phoneNumber
+                    employee.phoneNumber
                   )}
                 </td>
                 <td>
-                  {editingId === member.employeeId ? (
+                  {editingId === employee.employeeId ? (
                     <div className="flex justify-center items-center">
                       <button
-                        onClick={saveEdit}
+                        onClick={saveUpdatedEmployee}
                         className="border-2 border-green-800 bg-green-600 text-green-500 bg-opacity-30 hover:bg-opacity-50 p-2 rounded-lg"
                       >
                         Save
@@ -441,13 +505,16 @@ export default function AdminProjectTeam() {
                   ) : (
                     <div className="flex justify-center items-center gap-2">
                       <button
-                        onClick={() => startEditing(member)}
+                        onClick={() => startEditing(employee)}
                         className="border-2 border-yellow-600 bg-yellow-300 text-yellow-400 bg-opacity-30 hover:bg-opacity-50 p-2 rounded-lg"
                       >
                         <PencilIcon className="w-5 h-5 inline" />
                       </button>
                       <button
-                        onClick={() => removeTeamMember(member.employeeId)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteClick(employee);
+                        }}
                         className="border-2 border-red-800 bg-red-600 text-red-500 bg-opacity-30 hover:bg-opacity-50 p-2 rounded-lg"
                       >
                         <TrashIcon className="w-5 h-5 inline" />
@@ -460,6 +527,20 @@ export default function AdminProjectTeam() {
           </tbody>
         </table>
       </div>
+      {/* Delete Modal */}
+      <DeleteModal
+        isOpen={isDelModalOpen}
+        onClose={handleCloseDeleteModal}
+        onDelete={handleDeleteConfirm}
+      />
+
+      <ToastContainer
+        position="bottom-center"
+        autoClose={3000}
+        limit={3}
+        theme="dark"
+        stacked
+      />
     </div>
   );
 }
