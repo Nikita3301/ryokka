@@ -145,7 +145,7 @@ export default function ProjectGallery() {
         </div>
       )}
 
-      <ImageGallery />
+      <ImageGallery projectId={projectId}/>
 
       <ToastContainer
         position="bottom-center"
@@ -156,7 +156,12 @@ export default function ProjectGallery() {
       />
       {/* Back to Top Button */}
       {/* <button
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        onClick={() => {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        }}
         className="absolute z-50 bottom-32 right-8 bg-teal-600 text-white p-3 rounded-full shadow-lg hover:bg-teal-700  duration-300"
       >
         <ChevronUpIcon className="h-6 w-6" />

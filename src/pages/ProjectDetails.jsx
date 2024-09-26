@@ -12,7 +12,6 @@ import {
 import { faCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -245,25 +244,27 @@ export default function ProjectDetails() {
                           {invoice.invoiceDescription}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                        {moment(invoice.issueDate).format("DD.MM.YYYY")}
+                          {moment(invoice.issueDate).format("DD.MM.YYYY")}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           ${invoice.totalAmount}
                         </td>
-                        <td
-                          className="px-6 py-4 whitespace-nowrap text-center"
-                        >
-                          <p className={`px-1 py-1 flex justify-center items-center gap-2 font-semibold rounded-lg ${
-                            invoice.invoiceStatus === "Paid"
-                              ? "bg-green-600 text-green-600 bg-opacity-20"
-                              : invoice.invoiceStatus === "Pending"
-                              ? "bg-yellow-600 text-yellow-600 bg-opacity-20"
-                              : "bg-red-600 text-red-600 bg-opacity-20"
-                          }`}>
-                            <FontAwesomeIcon icon={faCircle} className="w-2 h-2" />
-                          {invoice.invoiceStatus}
+                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                          <p
+                            className={`px-1 py-1 flex justify-center items-center gap-2 font-semibold rounded-lg ${
+                              invoice.invoiceStatus === "Paid"
+                                ? "bg-green-600 text-green-600 bg-opacity-20"
+                                : invoice.invoiceStatus === "Pending"
+                                ? "bg-yellow-600 text-yellow-600 bg-opacity-20"
+                                : "bg-red-600 text-red-600 bg-opacity-20"
+                            }`}
+                          >
+                            <FontAwesomeIcon
+                              icon={faCircle}
+                              className="w-2 h-2"
+                            />
+                            {invoice.invoiceStatus}
                           </p>
-                          
                         </td>
                       </tr>
                     ))}
@@ -279,55 +280,29 @@ export default function ProjectDetails() {
             <div className="overflow-x-auto">
               {project.resources.length > 0 ? (
                 <table className="min-w-full divide-y divide-neutral-900 ">
-                   <thead className="bg-neutral-950 text-neutral-400 text-sm font-medium text-center">
+                  <thead className="bg-neutral-950 text-neutral-400 text-sm font-medium text-center">
                     <tr>
-                      <th className="px-6 py-3">
-                        Name
-                      </th>
-                      <th className="px-6 py-3 text-left">
-                        Description
-                      </th>
-                      <th className="px-6 py-3">
-                        Type
-                      </th>
-                      <th className="px-6 py-3">
-                        Unit of Measure
-                      </th>
-                      <th className="px-6 py-3">
-                        Unit Cost
-                      </th>
-                      <th className="px-6 py-3">
-                        Quantity
-                      </th>
-                      <th className="px-6 py-3">
-                        General Price
-                      </th>
+                      <th className="px-6 py-3">Name</th>
+                      <th className="px-6 py-3 text-left">Description</th>
+                      <th className="px-6 py-3">Type</th>
+                      <th className="px-6 py-3">Unit of Measure</th>
+                      <th className="px-6 py-3">Unit Cost</th>
+                      <th className="px-6 py-3">Quantity</th>
+                      <th className="px-6 py-3">General Price</th>
                     </tr>
                   </thead>
                   <tbody className="bg-neutral-900 divide-y text-center divide-neutral-600 text-sm">
                     {project.resources.map((resource) => (
                       <tr key={resource.resourceId}>
-                        <td className="px-6 py-4">
-                          {resource.resourceName}
-                        </td>
+                        <td className="px-6 py-4">{resource.resourceName}</td>
                         <td className="px-6 py-4 text-left">
                           {resource.resourceDescription}
                         </td>
-                        <td className="px-6 py-4">
-                          {resource.resourceType}
-                        </td>
-                        <td className="px-6 py-4">
-                          {resource.unitOfMeasure}
-                        </td>
-                        <td className="px-6 py-4">
-                          ${resource.unitCost}
-                        </td>
-                        <td className="px-6 py-4">
-                          {resource.quantity}
-                        </td>
-                        <td className="px-6 py-4">
-                          ${resource.generalPrice}
-                        </td>
+                        <td className="px-6 py-4">{resource.resourceType}</td>
+                        <td className="px-6 py-4">{resource.unitOfMeasure}</td>
+                        <td className="px-6 py-4">${resource.unitCost}</td>
+                        <td className="px-6 py-4">{resource.quantity}</td>
+                        <td className="px-6 py-4">${resource.generalPrice}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -340,7 +315,7 @@ export default function ProjectDetails() {
 
           {activeTab === "Gallery" && (
             <div>
-              <ImageGallery />
+              <ImageGallery projectId={projectId} />
             </div>
           )}
         </div>
