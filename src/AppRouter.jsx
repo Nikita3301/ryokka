@@ -16,6 +16,7 @@ import AdminProjectTeam from "admin_pages/AdminProjectTeam";
 import AdminProjectDetails from "admin_pages/AdminProjectDetails";
 import AdminProjectGallery from "admin_pages/AdminProjectGallery";
 import PrivateRoutesLayout from "pages/PrivateRoutesLayout";
+import Contacts from "./pages/Contacts";
 
 export default function AppRouter() {
   return (
@@ -28,6 +29,7 @@ export default function AppRouter() {
         <Route path="/team" element={<ProjectTeam />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/gallery/:projectId" element={<ProjectGallery />} />
+        <Route path="/contacts" element={<Contacts />} />
         <Route path="*" element={<NotFound />} />
         <Route path="/admin/signup" element={<Signup />} />
         <Route path="/admin/login" element={<Login />} />

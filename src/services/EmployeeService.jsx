@@ -5,7 +5,6 @@ const API_BASE_URL = "http://localhost:8080/api/employees";
 export const getAllEmployees = async () => {
   try {
     const response = await axiosInstance.get(API_BASE_URL);
-    console.log(response);
     return response.data;
   } catch (error) {
     console.error("Error fetching projects:", error);

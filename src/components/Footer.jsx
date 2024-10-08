@@ -27,7 +27,7 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row gap-4 mb-4 md:mb-0">
             <a href="/home" className="hover:text-gray-400">Dashboard</a>
             <a href="/services" className="hover:text-gray-400">Services</a>
-            <a href="/contact" className="hover:text-gray-400">Contact</a>
+            <a href="/contacts" className="hover:text-gray-400">Contact</a>
           </div>
 
           {/* Social Media Links */}

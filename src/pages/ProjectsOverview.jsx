@@ -120,7 +120,7 @@ export default function ProjectsOverview() {
           filteredProjects.map((project) => (
             <div
               key={project.projectId}
-              className="relative text-white bg-neutral-900 shadow-lg rounded-lg overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-md hover:shadow-teal-900 duration-500"
+              className="relative text-white bg-neutral-900 shadow-lg rounded-lg overflow-hidden flex flex-col hover:shadow-md hover:shadow-teal-900 duration-500"
             >
               <img
                 src={project.mainImageUrl}
@@ -174,7 +174,7 @@ export default function ProjectsOverview() {
                 <div className="mt-auto">
                   <button
                     onClick={() => handleViewDetails(project.projectId)}
-                    className="w-full bg-teal-600 text-gray-100 py-2 px-4 rounded-lg hover:bg-teal-700 transition-colors"
+                    className="btn-primary w-full py-2"
                     aria-label={`View details for ${project.projectName}`}
                   >
                     View Details

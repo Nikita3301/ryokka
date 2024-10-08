@@ -6,7 +6,6 @@ const API_BASE_URL = 'http://localhost:8080/api/projects';
 export const getAllProjects = async () => {
   try {
     const response = await axiosInstance.get(API_BASE_URL);
-    console.log(response)
     return response.data;
   } catch (error) {
     console.error('Error fetching projects:', error);
@@ -36,12 +35,6 @@ export const createProject = async (project) => {
   }
 };
 
-/**
- * Update an existing project.
- * @param {number} id - The ID of the project to update.
- * @param {Object} project - The project data to update.
- * @returns {Promise<Object>} A promise that resolves to the updated project data.
- */
 export const updateProject = async (id, project) => {
   try {
     const response = await axiosInstance.put(`${API_BASE_URL}/${id}`, project);
