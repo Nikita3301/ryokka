@@ -6,8 +6,7 @@ import { auth } from "../firebase/firebase";
 import { ArrowRightStartOnRectangleIcon } from "@heroicons/react/24/solid";
 
 export default function Header() {
-  const [user, loading, error] = useAuthState(auth);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user] = useAuthState(auth);
 
   const handleLogout = () => {
     auth.signOut();
@@ -26,15 +25,9 @@ export default function Header() {
     { path: "/admin/gallery", label: "Gallery" },
   ];
 
-  // useEffect(() => {
-  //   auth.onAuthStateChanged(auth, (user) => {
-  //     setIsLoggedIn(!!user);
-  //   });
-  // }, []);
-
   return (
     <header className="bg-neutral-900 text-white p-4">
-      <nav className="px-4 flex justify-between items-center font-semibold">
+      <nav className="px-4 flex justify-between items-center ">
         <div className="flex justify-center items-center gap-2 text-lg">
           <img src={LogoImg} alt="Logo" className="h-10 w-auto" />
           <NavLink to="/home" className="hover:text-gray-300">
@@ -55,7 +48,7 @@ export default function Header() {
           ))}
           
         </div>
-        {user && (
+        {user ? (
             <button
               onClick={handleLogout}
               className="flex gap-2 border-2 border-red-800 bg-red-600 text-red-500 bg-opacity-30 hover:bg-opacity-50 px-4 py-1 rounded-lg"
@@ -63,7 +56,13 @@ export default function Header() {
               Logout
               <ArrowRightStartOnRectangleIcon className="h-6 w-6"/>
             </button>
-          )}
+          ): (<NavLink
+            to="/contacts"
+            className="btn-primary"
+          >
+            Hire Us
+          </NavLink>)}
+
       </nav>
     </header>
   );

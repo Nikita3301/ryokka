@@ -6,7 +6,7 @@ import { getAllProjects } from "services/ProjectsService";
 import { CalendarDateRangeIcon, MapPinIcon, TrashIcon, PencilIcon } from "@heroicons/react/24/solid";
 
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
-import moment from "moment";
+import { format} from "date-fns";
 
 export default function AdminProjects() {
   const navigate = useNavigate();
@@ -134,8 +134,8 @@ export default function AdminProjects() {
                   <div className="text-gray-400">
                     <strong>Dates:</strong>
                     <div className="whitespace-nowrap ">
-                      {moment(project.startDate).format("MM.YYYY")} -{" "}
-                      {moment(project.endDate).format("MM.YYYY")}
+                      {format(project.startDate,"MM.yyyy")} -{" "}
+                      {format(project.endDate, "MM.yyyy")}
                     </div>
                   </div>
                 </div>

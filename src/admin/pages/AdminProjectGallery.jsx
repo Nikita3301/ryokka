@@ -19,7 +19,7 @@ import {
   StarIcon,
 } from "@heroicons/react/24/outline";
 
-import moment from "moment";
+import { format} from "date-fns";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -263,7 +263,7 @@ export default function AdminProjectGallery() {
             <tbody>
               <tr className="*:px-4">
                 <td className="py-2 font-semibold flex items-center gap-2">
-                  <MapPinIcon className="size-5 text-sky-500" />
+                  <MapPinIcon className="size-5 text-teal-500" />
                   Location
                 </td>
                 <td className="py-2">{project.projectLocation}</td>
@@ -271,7 +271,7 @@ export default function AdminProjectGallery() {
               <tr className="*:px-4">
                 <td className="py-2 font-semibold">
                   <div className="py-2 flex items-center gap-2">
-                    <ExclamationCircleIcon className="size-5" />
+                    <ExclamationCircleIcon className="size-5 text-teal-500" />
                     Status
                   </div>
                 </td>
@@ -292,27 +292,27 @@ export default function AdminProjectGallery() {
               </tr>
               <tr className="*:px-4">
                 <td className="py-2 font-semibold flex items-center gap-2">
-                  <CalendarDateRangeIcon className="size-5" />
+                  <CalendarDateRangeIcon className="size-5 text-teal-500" />
                   Dates
                 </td>
                 <td className="py-2">
                   <div className="flex gap-2 items-center">
-                    {moment(project.startDate).format("DD.MM.YYYY")}
+                    {format(project.startDate, "dd.MM.yyyy")}
                     <ArrowLongRightIcon className="size-5" />{" "}
-                    {moment(project.endDate).format("DD.MM.YYYY")}
+                    {format(project.endDate, "dd.MM.yyyy")}
                   </div>
                 </td>
               </tr>
               <tr className="*:px-4">
                 <td className="py-2 font-semibold flex items-center gap-2">
-                  <CurrencyDollarIcon className="size-5" />
+                  <CurrencyDollarIcon className="size-5 text-teal-500" />
                   Budget
                 </td>
                 <td className="py-2">{project.projectBudget}</td>
               </tr>
               <tr className="*:px-4">
                 <td className="py-4 font-semibold flex items-center gap-2 justify-center">
-                  <UserGroupIcon className="size-5" />
+                  <UserGroupIcon className="size-5 text-teal-500" />
                   Employees
                 </td>
                 <td className="py-2 text-center">
@@ -338,7 +338,7 @@ export default function AdminProjectGallery() {
               </tr>
               <tr className="*:px-4">
                 <td className="py-2 font-semibold flex items-center gap-2">
-                  <DocumentTextIcon className="size-5" />
+                  <DocumentTextIcon className="size-5 text-teal-500" />
                   Description
                 </td>
                 <td className="py-2">

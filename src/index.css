@@ -2,19 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
-::-webkit-scrollbar {
-    width: 10px;
-}
+@layer components {
+  .btn-primary {
+    @apply flex justify-center items-center whitespace-nowrap w-fit bg-gradient-to-br from-teal-300 via-teal-600 to-teal-800 text-black text-sm font-medium py-1.5 px-5 shadow rounded-xl transition duration-300 hover:shadow-teal-400;
+  }
+
+  .block_shadow_effects{
+    @apply shadow-lg hover:-translate-y-1 hover:shadow-md duration-500;
+  }
  
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
 ::-webkit-scrollbar-track {
-    background: #171717;
+  background: #171717;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #0D9488;
-    
+  background: #0d9488;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #555;
+  background: #555;
+}
+
+.swiper-pagination-bullet {
+  background-color: teal; /* Change to your preferred color */
+}
+
+.swiper-pagination-bullet-active {
+  background-color: teal; /* Change the active dot color */
 }

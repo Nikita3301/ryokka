@@ -15,7 +15,7 @@ export default defineConfig({
       utils: "/src/utils",
     },
   }, optimizeDeps: {
-    include: ['@fortawesome/react-fontawesome', 'firebase/app', 'firebase/auth'],
+    include: ['@fortawesome/react-fontawesome', 'firebase/app', 'firebase/auth', 'swiper/react'],
   }
   
 });

@@ -15,7 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import moment from "moment";
+import { format} from "date-fns";
 import ImageGallery from "../components/ImageGallery";
 
 export default function ProjectDetails() {
@@ -170,13 +170,13 @@ export default function ProjectDetails() {
                   <div className="flex flex-col items-center justify-between gap-2 bg-neutral-900 p-4 rounded-lg basis-1/4 min-w-36">
                     <p className="text-neutral-500 font-semibold">Start date</p>
                     <RocketLaunchIcon className="w-12 h-12 text-amber-400" />
-                    <p>{moment(project.startDate).format("MMM Do YYYY")}</p>
+                    <p>{format(project.startDate, "dd MMM yyyy")}</p>
                     <p></p>
                   </div>
                   <div className="flex flex-col items-center justify-between gap-2 bg-neutral-900 p-4 rounded-lg basis-1/4 min-w-36">
                     <p className="text-neutral-500 font-semibold">End date</p>
                     <CheckBadgeIcon className="w-12 h-12 text-green-500" />
-                    <p>{moment(project.endDate).format("MMM Do YYYY")}</p>
+                    <p>{format(project.endDate, "dd MMM yyyy")}</p>
                     <p></p>
                   </div>
                   <div className="flex flex-col items-center justify-between gap-2 bg-neutral-900 p-4 rounded-lg basis-1/4 min-w-36">
@@ -244,7 +244,7 @@ export default function ProjectDetails() {
                           {invoice.invoiceDescription}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          {moment(invoice.issueDate).format("DD.MM.YYYY")}
+                          {format(invoice.issueDate, "dd.MM.yyyy")}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           ${invoice.totalAmount}

@@ -21,7 +21,7 @@ import "react-toastify/dist/ReactToastify.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-import moment from "moment";
+import { format} from "date-fns";
 import ImageGallery from "components/ImageGallery";
 import {
   getAllClients,
@@ -526,7 +526,7 @@ export default function ProjectDetails() {
                             {invoice.invoiceDescription}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {moment(invoice.issueDate).format("DD.MM.YYYY")}
+                            {format(invoice.issueDate,"dd.MM.yyyy")}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             ${invoice.totalAmount}
@@ -568,9 +568,11 @@ export default function ProjectDetails() {
                 )}
               </div>
               <div className="w-full flex justify-center p-5">
-              <ExcelExport excelData={project.invoices} fileName={"Invoices"} />
+                <ExcelExport
+                  excelData={project.invoices}
+                  fileName={"Invoices"}
+                />
               </div>
-             
             </div>
           )}
 
