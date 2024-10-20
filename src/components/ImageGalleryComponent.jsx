@@ -7,7 +7,6 @@ import { getProjectById } from "services/ProjectsService";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// Skeleton loader component
 const Skeleton = () => {
   return (
     <div className="relative bg-neutral-800 rounded-lg shadow-lg overflow-hidden animate-pulse">
@@ -19,7 +18,7 @@ const Skeleton = () => {
   );
 };
 
-export default function ImageGallery(projectId) {
+export default function ImageGalleryComponent(projectId) {
   const [images, setImages] = useState([]);
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,12 +26,10 @@ export default function ImageGallery(projectId) {
   const [projectError, setProjectError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
 
-  // Group images by year and sort years in reverse order
   const groupedImagesByYear = {};
 
   useEffect(() => {
     if (!projectId) {
-      // Postpone the requests until projectId is available
       console.log("Waiting for projectId...");
       return;
     }
@@ -76,7 +73,6 @@ export default function ImageGallery(projectId) {
     groupedImagesByYear[year].push(image);
   });
 
-  // Sort years in reverse order
   const sortedYears = Object.keys(groupedImagesByYear).sort((a, b) => b - a);
 
   const handleImageClick = (image) => {

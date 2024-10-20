@@ -46,23 +46,25 @@ export default function Header() {
               {item.label}
             </NavLink>
           ))}
-          
         </div>
         {user ? (
-            <button
-              onClick={handleLogout}
-              className="flex gap-2 border-2 border-red-800 bg-red-600 text-red-500 bg-opacity-30 hover:bg-opacity-50 px-4 py-1 rounded-lg"
-            >
-              Logout
-              <ArrowRightStartOnRectangleIcon className="h-6 w-6"/>
-            </button>
-          ): (<NavLink
-            to="/contacts"
-            className="btn-primary"
+          <button
+            onClick={handleLogout}
+            className="flex gap-2 border-2 border-red-800 bg-red-600 text-red-500 bg-opacity-30 hover:bg-opacity-50 px-4 py-1 rounded-lg"
           >
-            Hire Us
-          </NavLink>)}
-
+            Logout
+            <ArrowRightStartOnRectangleIcon className="h-6 w-6" />
+          </button>
+        ) : (
+          <div className="flex gap-2">
+            <NavLink to="/contacts" className="btn-primary">
+              Hire Us
+            </NavLink>
+            <NavLink to="/admin/login" className="btn-primary">
+              <span className="font-semibold text-black">Admin</span>
+            </NavLink>
+          </div>
+        )}
       </nav>
     </header>
   );

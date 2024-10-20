@@ -21,14 +21,15 @@ import "react-toastify/dist/ReactToastify.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-import { format} from "date-fns";
-import ImageGallery from "components/ImageGallery";
+import { format } from "date-fns";
+import ImageGalleryComponent from "components/ImageGalleryComponent";
 import {
   getAllClients,
   getAllClientsWithoutProjects,
-} from "../../services/ClientService";
-import { ClientForm } from "../../utils/ClientForm";
-import ExcelExport from "../../services/ExcelExport";
+} from "../../../services/ClientService";
+import { ClientForm } from "../../../utils/ClientForm";
+import ExcelExport from "../../../services/ExcelExport";
+import ProjectImagesComponent from "../ProjectImagesComponent";
 
 export default function ProjectDetails() {
   const navigate = useNavigate();
@@ -37,18 +38,10 @@ export default function ProjectDetails() {
   const [clients, setClients] = useState(null);
   const [clientToEdit, setClientToEdit] = useState(null);
 
-  const [activeTab, setActiveTab] = useState("General");
+  const [activeTab, setActiveTab] = useState("Employees");
 
-  const [editGeneralInfo, setEditGeneralInfo] = useState(false);
-  const [selectedProjectName, setSelectedProjectName] = useState(null);
-  const [selectedProjectLocation, setSelectedProjectLocation] = useState(null);
-  const [selectedProjectDescription, setSelectedProjectDescription] =
-    useState(null);
-  const [selectedClient, setSelectedClient] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState(null);
-  const [selectedStartDate, setSelectedStartDate] = useState(null);
-  const [selectedEndDate, setSelectedEndDate] = useState(null);
-  const [selectedBudget, setSelectedBudget] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedProject, setEditedProject] = useState({ ...project });
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -56,6 +49,7 @@ export default function ProjectDetails() {
         const response = await getProjectById(projectId);
         console.log(response);
         setProject(response);
+        setEditedProject(response);
       } catch (error) {
         toast.error("Error fetching project details");
         console.error("Error fetching project details:", error);
@@ -74,97 +68,253 @@ export default function ProjectDetails() {
     fetchAllClients();
   }, []);
 
-  // useEffect(() => {
-  //   const fetchClients = async () => {
-  //     try {
-  //       const response = await getAllClientsWithoutProjects();
-  //       console.log("clients", response);
-  //       setClients(response);
-  //     } catch (error) {
-  //       toast.error("Error fetching project details");
-  //       console.error("Error fetching project details:", error);
-  //     }
-  //   };
-  //   fetchClients();
-  // }, [editGeneralInfo]);
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing); // Toggle edit mode
+  };
 
-  useEffect(() => {
-    if (project) {
-      if (project.projectName) {
-        setSelectedProjectName(project.projectName);
-      }
-      if (project.projectLocation) {
-        setSelectedProjectLocation(project.projectLocation);
-      }
-      if (project.projectDescription) {
-        setSelectedProjectDescription(project.projectDescription);
-      }
-      if (project.startDate) {
-        setSelectedStartDate(new Date(project.startDate));
-      }
-      if (project.endDate) {
-        setSelectedEndDate(new Date(project.endDate));
-      }
-      if (project.projectStatus) {
-        setSelectedStatus(project.projectStatus);
-      }
-      if (project.projectBudget) {
-        setSelectedBudget(project.projectBudget);
-      }
-    }
-  }, [project]);
-
-  const handleSaveClick = () => {
-    console.log({
-      projectName: selectedProjectName,
-      projectLocation: selectedProjectLocation,
-      projectDescription: selectedProjectDescription,
-      startDate: selectedStartDate,
-      endDate: selectedEndDate,
-      projectStatus: selectedStatus,
-      projectBudget: selectedBudget,
-    });
-    toast.success("Project info edied syccesfully!");
-    setEditGeneralInfo(false);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditedProject({ ...editedProject, [name]: value }); // Update edited project
   };
 
   const handleSave = () => {
-    fetchClients(); // Refresh the list
-    setClientToEdit(null); // Reset form for adding new client
+    // Save the changes (add your save logic here)
+    console.log("Saved project:", editedProject);
+    setIsEditing(false); // Exit edit mode
   };
 
   if (!project) return <p className="text-neutral-400">Loading...</p>;
 
   return (
     <div className="min-h-screen bg-black text-neutral-200">
-      {/* Main Project Image */}
-      <div className="relative">
-        <img
-          src={project.mainImageUrl}
-          alt={project.projectName}
-          className="w-screen max-h-[300px] object-cover"
-        />
-      </div>
+      <section className="p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <ProjectImagesComponent projectId={projectId} />
+
+          <div className="flex flex-col gap-4 p-4">
+            {/* Project Name and Edit Button */}
+            <div className="flex justify-between items-center">
+              {isEditing ? (
+                <input
+                  type="text"
+                  name="projectName"
+                  value={editedProject.projectName}
+                  onChange={handleInputChange}
+                  className="text-3xl font-bold bg-neutral-900 py-1.5 px-2 rounded-lg outline-none"
+                />
+              ) : (
+                <h1 className="text-3xl font-bold py-1.5 px-2">
+                  {project.projectName}
+                </h1>
+              )}
+
+              {/* Toggle edit/save button */}
+              <button
+                onClick={isEditing ? handleSave : handleEditToggle}
+                className="btn-primary"
+              >
+                {isEditing ? "Save" : "Edit Project"}
+              </button>
+            </div>
+
+            <div className="flex gap-8">
+              <div className="flex items-center text-neutral-500 gap-2">
+                <MapPinIcon className="w-6 h-6" />
+                <div className="font-semibold">
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="projectLocation"
+                      value={editedProject.projectLocation}
+                      onChange={handleInputChange}
+                      className="bg-neutral-900 py-1.5 px-2 rounded-lg outline-none"
+                    />
+                  ) : (
+                    <p className="py-1.5 px-2">{project.projectLocation}</p>
+                  )}
+                </div>
+              </div>
+              {isEditing ? (
+                <div className="relative h-full">
+                  <select
+                    name="projectStatus"
+                    value={editedProject.projectStatus}
+                    onChange={(e) =>
+                      setEditedProject({
+                        ...editedProject,
+                        projectStatus: e.target.value,
+                      })
+                    }
+                    className="block w-32 px-2 rounded-lg bg-neutral-800 text-gray-200 shadow-md focus:outline-none appearance-none h-full"
+                  >
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Not Started">Not Started</option>
+                    <option value="On Hold">On Hold</option>
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                    <ChevronDownIcon className="w-4 h-4 text-teal-700 stroke-[3]" />
+                  </div>
+                </div>
+              ) : (
+                <span
+                  className={`h-full flex justify-center items-center px-3 py-1 whitespace-nowrap text-sm font-semibold rounded-lg w-fit ${
+                    project.projectStatus === "Completed"
+                      ? "bg-green-600 text-green-600 bg-opacity-20"
+                      : project.projectStatus === "In Progress"
+                      ? "bg-sky-500 text-sky-500 bg-opacity-20"
+                      : project.projectStatus === "Not Started"
+                      ? "bg-yellow-500 text-yellow-500 bg-opacity-20"
+                      : "bg-neutral-300 text-neutral-300 bg-opacity-20"
+                  }`}
+                >
+                  {project.projectStatus}
+                </span>
+              )}
+            </div>
+
+            {/* Client Details */}
+            <div className="flex flex-col gap-2">
+              <p className="text-neutral-300 font-semibold">Client</p>
+              <div className="flex items-center justify-start gap-4 bg-neutral-900 py-1.5 px-4 rounded-lg w-fit">
+                <UserCircleIcon className="size-8 text-purple-500" />
+                {isEditing ? (
+                  <select
+                    value={editedProject.client.id}
+                    onChange={(e) => {
+                      const selectedClient = clients.find(
+                        (client) => client.id === parseInt(e.target.value)
+                      );
+                      setEditedProject({
+                        ...editedProject,
+                        client: {
+                          id: selectedClient.id,
+                          firstName: selectedClient.firstName,
+                          lastName: selectedClient.lastName,
+                        },
+                      });
+                    }}
+                    className="bg-neutral-900 rounded-lg outline-none"
+                  >
+                    {clients.map((client) => (
+                      <option key={client.id} value={client.id}>
+                        {client.firstName} {client.lastName}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <div className="rounded-lg">
+                    {project.client.firstName} {project.client.lastName}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Overview */}
+            <div className="flex flex-col gap-2">
+              <p className="text-neutral-300 font-semibold">Overview</p>
+
+              <div className="w-fit p-1 bg-neutral-900 rounded-lg font-semibold">
+                <table className="table-auto text-left text-neutral-300">
+                  <tbody>
+                    <tr className="border-b border-neutral-700">
+                      <td className="flex items-center gap-3 whitespace-nowrap px-3 py-1.5 border-r border-neutral-700">
+                        <RocketLaunchIcon className="size-6 text-amber-400" />
+                        <span>Start date</span>
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-1.5">
+                        {isEditing ? (
+                          <DatePicker
+                            className=" font-bold bg-neutral-800 rounded-md border-2 border-amber-400 text-gray-100 focus:outline-none text-center"
+                            selected={editedProject.startDate}
+                            onChange={(date) =>
+                              setEditedProject({
+                                ...editedProject,
+                                startDate: date,
+                              })
+                            }
+                            dateFormat="dd/MM/YYYY"
+                          />
+                        ) : (
+                          <p className="h-7">{format(project.startDate, "dd MMM yyyy")}</p>
+                        )}
+                      </td>
+                    </tr>
+                    <tr className="border-b border-neutral-700">
+                      <td className="flex items-center gap-3 whitespace-nowrap px-3 py-1.5 border-r border-neutral-700">
+                        <CheckBadgeIcon className="size-6 text-green-500" />
+                        <span>End date</span>
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-1.5">
+                        {isEditing ? (
+                          <DatePicker
+                            className=" font-bold bg-neutral-800 rounded-md border-2 border-amber-400 text-gray-100 focus:outline-none text-center"
+                            selected={editedProject.startDate}
+                            onChange={(date) =>
+                              setEditedProject({
+                                ...editedProject,
+                                endDate: date,
+                              })
+                            }
+                            dateFormat="dd/MM/YYYY"
+                          />
+                        ) : (
+                          <p className="h-7">{format(project.endDate, "dd MMM yyyy")}</p>
+                        )}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="flex items-center gap-3 whitespace-nowrap px-3 py-1.5 border-r border-neutral-700">
+                        <CurrencyDollarIcon className="size-6 text-purple-500" />
+                        <span>Budget</span>
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-1.5">
+                        {isEditing ? (
+                          <input
+                            type="number"
+                            name="projectBudget"
+                            value={editedProject.projectBudget}
+                            onChange={handleInputChange}
+                            className="bg-neutral-900 rounded"
+                          />
+                        ) : (
+                          `$${project.projectBudget}`
+                        )}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="flex flex-col gap-2">
+              <p className="text-neutral-300 font-semibold">Description</p>
+              {isEditing ? (
+                <textarea
+                  name="projectDescription"
+                  value={editedProject.projectDescription}
+                  onChange={handleInputChange}
+                  className="bg-neutral-900 p-2 rounded-lg"
+                />
+              ) : (
+                <p className="text-neutral-400">{project.projectDescription}</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Tabs */}
       <div className="p-2">
         <div className="flex justify-around font-semibold border-b border-neutral-700 mb-6 ">
-          <button
-            className={`px-4 py-2 ${
-              activeTab === "General"
-                ? "text-teal-500 border-b-2 border-teal-500"
-                : "border-b-2 border-neutral-950"
-            }`}
-            onClick={() => setActiveTab("General")}
-          >
-            General
-          </button>
+         
 
           <button
             className={`px-4 py-2 ${
               activeTab === "Employees"
                 ? "text-teal-500 border-b-2 border-teal-500"
-                : "border-b-2 border-neutral-950"
+                : "border-b-2 border-transparent"
             }`}
             onClick={() => setActiveTab("Employees")}
           >
@@ -175,7 +325,7 @@ export default function ProjectDetails() {
             className={`px-4 py-2 ${
               activeTab === "Clients"
                 ? "text-teal-500 border-b-2 border-teal-500"
-                : "border-b-2 border-neutral-950"
+                : "border-b-2 border-transparent"
             }`}
             onClick={() => setActiveTab("Clients")}
           >
@@ -186,7 +336,7 @@ export default function ProjectDetails() {
             className={`px-4 py-2 ${
               activeTab === "Invoices"
                 ? "text-teal-500 border-b-2 border-teal-500"
-                : "border-b-2 border-neutral-950"
+                : "border-b-2 border-transparent"
             }`}
             onClick={() => setActiveTab("Invoices")}
           >
@@ -197,7 +347,7 @@ export default function ProjectDetails() {
             className={`px-4 py-2 ${
               activeTab === "Resources"
                 ? "text-teal-500 border-b-2 border-teal-500"
-                : "border-b-2 border-neutral-950"
+                : "border-b-2 border-transparent"
             }`}
             onClick={() => setActiveTab("Resources")}
           >
@@ -208,7 +358,7 @@ export default function ProjectDetails() {
             className={`px-4 py-2 ${
               activeTab === "Gallery"
                 ? "text-teal-500 border-b-2 border-teal-500"
-                : "border-b-2 border-neutral-950"
+                : "border-b-2 border-transparent"
             }`}
             onClick={() => setActiveTab("Gallery")}
           >
@@ -218,7 +368,7 @@ export default function ProjectDetails() {
 
         {/* Tab Content */}
         <div>
-          {activeTab === "General" && (
+          {/* {activeTab === "General" && (
             <div className=" flex flex-col justify-center items-center">
               <div className="flex flex-col gap-4 px-6 rounded-lg font-medium max-w-4xl w-full border-2 border-teal-500 bg-neutral-950 p-4">
                 <div className="flex flex-col gap-4 justify-between  text-sm">
@@ -300,7 +450,7 @@ export default function ProjectDetails() {
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> 
 
                 {editGeneralInfo ? (
                   <div className="bg-neutral-900 p-4 rounded-lg flex flex-col gap-2">
@@ -408,7 +558,7 @@ export default function ProjectDetails() {
                 </div>
               </div>
             </div>
-          )}
+          )} */}
 
           {activeTab === "Employees" && (
             <div className="p-3">
@@ -526,7 +676,7 @@ export default function ProjectDetails() {
                             {invoice.invoiceDescription}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {format(invoice.issueDate,"dd.MM.yyyy")}
+                            {format(invoice.issueDate, "dd.MM.yyyy")}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             ${invoice.totalAmount}
@@ -634,7 +784,7 @@ export default function ProjectDetails() {
                   Open edit gallery page
                 </button>
               </div>
-              <ImageGallery projectId={project.projectId} />
+              <ImageGalleryComponent projectId={project.projectId} />
             </div>
           )}
         </div>

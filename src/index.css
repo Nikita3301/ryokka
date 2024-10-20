@@ -10,7 +10,6 @@
   .block_shadow_effects{
     @apply shadow-lg hover:-translate-y-1 hover:shadow-md duration-500;
   }
- 
 }
 
 ::-webkit-scrollbar {

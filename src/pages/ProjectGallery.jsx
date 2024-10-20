@@ -9,7 +9,7 @@ import { getProjectImagesById } from "services/GalleryService";
 import { getProjectById } from "services/ProjectsService";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ImageGallery from "../components/ImageGallery";
+import ImageGalleryComponent from "../components/ImageGalleryComponent";
 
 // Skeleton loader component
 const Skeleton = () => {
@@ -145,7 +145,7 @@ export default function ProjectGallery() {
         </div>
       )}
 
-      <ImageGallery projectId={projectId}/>
+      <ImageGalleryComponent projectId={projectId}/>
 
       <ToastContainer
         position="bottom-center"

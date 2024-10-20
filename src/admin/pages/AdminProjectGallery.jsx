@@ -441,7 +441,7 @@ export default function AdminProjectGallery() {
         </div>
       )}
 
-      {/* <ImageGallery projectId={projectId} /> */}
+      {/* <ImageGalleryComponent projectId={projectId} /> */}
 
       <div className="flex flex-col h-full bg-neutral-950 w-full text-gray-200">
         {sortedYears.map((year) => (

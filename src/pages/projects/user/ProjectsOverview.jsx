@@ -115,12 +115,12 @@ export default function ProjectsOverview() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 p-4">
         {filteredProjects.length > 0 ? (
           filteredProjects.map((project) => (
             <div
               key={project.projectId}
-              className="relative text-white bg-neutral-900 shadow-lg rounded-lg overflow-hidden flex flex-col hover:shadow-md hover:shadow-teal-900 duration-500"
+              className="relative text-white bg-gradient-to-b from-neutral-900 to-teal-950/50 shadow-lg rounded-lg overflow-hidden flex flex-col hover:shadow-md hover:shadow-teal-900 duration-500"
             >
               <img
                 src={project.mainImageUrl}
@@ -143,7 +143,7 @@ export default function ProjectsOverview() {
                   </p>
                 </div>
               </div>
-              <div className="p-6 flex-1 flex flex-col">
+              <div className="p-4 flex-1 flex flex-col">
                 <h2 className="text-2xl font-semibold mb-2">
                   {project.projectName}
                 </h2>
