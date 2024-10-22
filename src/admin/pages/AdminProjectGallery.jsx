@@ -14,12 +14,9 @@ import {
   PhotoIcon,
   TrashIcon,
 } from "@heroicons/react/24/solid";
-import {
-  DocumentTextIcon,
-  StarIcon,
-} from "@heroicons/react/24/outline";
+import { DocumentTextIcon, StarIcon } from "@heroicons/react/24/outline";
 
-import { format} from "date-fns";
+import { format } from "date-fns";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -54,7 +51,6 @@ export default function AdminProjectGallery() {
   const { projectId } = useParams();
 
   const [images, setImages] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDelItem, setSelectedDelItem] = useState(null);
   const [isDelModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -67,7 +63,6 @@ export default function AdminProjectGallery() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreviews, setImagePreviews] = useState([]); // Store image preview URLs
 
-  // Group images by year and sort years in reverse order
   const groupedImagesByYear = {};
 
   const fetchImages = async () => {
@@ -98,7 +93,6 @@ export default function AdminProjectGallery() {
 
   useEffect(() => {
     if (!projectId) {
-      // Postpone the requests until projectId is available
       console.log("Waiting for projectId...");
       return;
     }
@@ -143,7 +137,6 @@ export default function AdminProjectGallery() {
     const files = Array.from(event.target.files);
     console.log("files", files);
 
-    // Create a new array with file objects including the date as null initially
     const filesWithDates = files.map((file) => ({
       file,
       date: null,
@@ -204,16 +197,16 @@ export default function AdminProjectGallery() {
 
   const handleDeleteClick = (item) => {
     setSelectedDelItem(item);
-    if(item.isMainImage){
+    if (item.isMainImage) {
       toast.error("Select another main image before deleting!");
     }
     setIsDeleteModalOpen(true);
   };
 
   const handleDeleteConfirm = async () => {
-    if(selectedDelItem.isMainImage){
+    if (selectedDelItem.isMainImage) {
       toast.error("Select another main image before deleting!");
-    }else{
+    } else {
       try {
         await deleteImageById(selectedDelItem.imageId);
         toast.success("Image deleted successfully.");
@@ -224,7 +217,6 @@ export default function AdminProjectGallery() {
       }
       setIsDeleteModalOpen(false);
     }
-    
   };
 
   const handleCloseDeleteModal = () => {

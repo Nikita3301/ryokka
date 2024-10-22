@@ -1,16 +1,44 @@
+import React, { useState, useEffect } from "react";
+
 import {
   CalendarDateRangeIcon,
   MapPinIcon,
   ArrowLongRightIcon,
 } from "@heroicons/react/24/solid";
 import { format } from "date-fns";
+import { toast } from "react-toastify";
+import { deleteProject } from "services/ProjectsService";
+import { DeleteModal } from "../../utils/DeleteModal";
 
-const ProjectCard = ({
+export default function ProjectCard({
   project,
+  setProjects,
   handleViewDetails,
   handleEdit,
-  handleDelete,
-}) => {
+}) {
+  
+  //delete modal
+  const [isDelModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedDelItem, setSelectedDelItem] = useState(null);
+
+  const handleDelete = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async (projectId) => {
+    try {
+      await deleteProject(projectId);
+      toast.success("Project deleted successfully!");
+      setProjects((prevProjects) =>
+        prevProjects.filter((project) => project.projectId !== projectId)
+      );
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to delete project. Please try again.");
+    }
+    setIsDeleteModalOpen(false);
+  };
+
   return (
     <div
       key={project.projectId}
@@ -82,15 +110,18 @@ const ProjectCard = ({
           {handleDelete && (
             <button
               onClick={() => handleDelete(project.projectId)}
-              className="bg-red-600 hover:bg-red-700 text-neutral-900 font-semibold py-2 px-4 rounded-xl"
+              className="bg-red-600/20 hover:bg-red-600/60 text-red-600 border-2 border-red-600 font-semibold py-2 px-4 rounded-xl"
             >
               Delete
             </button>
           )}
         </div>
       </div>
+      <DeleteModal
+        isOpen={isDelModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onDelete={() => handleDeleteConfirm(project.projectId)}
+      />
     </div>
   );
-};
-
-export default ProjectCard;
+}

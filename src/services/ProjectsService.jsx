@@ -45,11 +45,6 @@ export const updateProject = async (id, project) => {
   }
 };
 
-/**
- * Delete a project.
- * @param {number} id - The ID of the project to delete.
- * @returns {Promise<void>} A promise that resolves when the project is deleted.
- */
 export const deleteProject = async (id) => {
   try {
     await axiosInstance.delete(`${API_BASE_URL}/${id}`);

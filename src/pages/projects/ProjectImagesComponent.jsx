@@ -29,7 +29,6 @@ export default function ProjectImagesComponent(projectId) {
     const fetchImages = async () => {
       try {
         const data = await getProjectImagesById(projectId.projectId);
-        console.log(data);
         setImages(data);
       } catch (error) {
         toast.error("Failed to load images.");

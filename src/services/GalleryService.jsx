@@ -5,7 +5,6 @@ const API_BASE_URL = "http://localhost:8080/api/project-images";
 export const getAllProjectImages = async () => {
   try {
     const response = await axiosInstance.get(`${API_BASE_URL}/all`);
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching projects:", error);
@@ -16,7 +15,6 @@ export const getAllProjectImages = async () => {
 export const getProjectImagesById = async (projectId) => {
   try {
     const response = await axiosInstance.get(`${API_BASE_URL}/${projectId}`);
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching projects:", error);
@@ -56,7 +54,6 @@ export const uploadImages = async (formData, projectId) => {
 export const deleteImageById = async (imageId) => {
   try {
     const response = await axiosInstance.delete(`${API_BASE_URL}/images/${imageId}`);
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error deleting:", error);
