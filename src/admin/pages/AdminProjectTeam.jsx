@@ -149,6 +149,7 @@ export default function AdminProjectTeam() {
     setSelectedDelItem(item);
     setIsDeleteModalOpen(true);
   };
+  
   const handleDeleteConfirm = async () => {
     try {
       await deleteEmployeeById(selectedDelItem.employeeId);

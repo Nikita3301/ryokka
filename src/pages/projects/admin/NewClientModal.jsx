@@ -1,8 +1,12 @@
-import React, { useState} from "react";
+import React, { useState } from "react";
 import { createClient } from "services/ClientService";
 import { toast } from "react-toastify";
 
-export default function NewClientModal({ setIsModalOpen,clients, setClients }) {
+export default function NewClientModal({
+  setIsModalOpen,
+  clients,
+  setClients,
+}) {
   const initialClientState = {
     firstName: "",
     lastName: "",
@@ -93,7 +97,7 @@ export default function NewClientModal({ setIsModalOpen,clients, setClients }) {
               Cancel
             </button>
             <button
-              type="button" 
+              type="button"
               onClick={handleCreateNewClient}
               className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700"
             >

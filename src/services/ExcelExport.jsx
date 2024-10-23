@@ -2,6 +2,7 @@ import React from "react";
 import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
 import { ArrowUpTrayIcon } from "@heroicons/react/24/solid";
+import { toast } from "react-toastify";
 
 const ExcelExport = ({ excelData, fileName }) => {
   const fileType =
@@ -18,13 +19,14 @@ const ExcelExport = ({ excelData, fileName }) => {
     const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" }); // Write workbook to array
     const data = new Blob([excelBuffer], { type: fileType }); // Create a blob
     FileSaver.saveAs(data, fileName + fileExtension); // Use FileSaver to download the file
+    toast.success("File succesfully exported!")
   };
 
   return (
     <div>
       <button
         onClick={exportToExcel}
-        className="flex justify-center items-center gap-3 w-fit border-2 border-sky-800 bg-sky-600 text-sky-500 bg-opacity-30 hover:bg-opacity-50 px-6 py-2 rounded-lg"
+        className="flex justify-center items-center gap-3 w-fit border-2 font-medium border-sky-800 bg-sky-600/20 text-sky-500 hover:bg-sky-600/40 px-6 py-2 rounded-lg"
       >
         <ArrowUpTrayIcon className="size-6 inline"/>
         Export to Excel

@@ -7,8 +7,6 @@ import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import ProjectCard from "pages/projects/ProjectCard";
 import NewProjectForm from "./NewProjectForm";
 import ToastInit from "../../../components/ToastInit";
-import { DeleteModal } from "./../../../utils/DeleteModal";
-import { deleteProject } from "../../../services/ProjectsService";
 
 export default function AdminProjects() {
   const navigate = useNavigate();
@@ -17,8 +15,6 @@ export default function AdminProjects() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
-
-
 
   const [activeTab, setActiveTab] = useState("projects");
 
@@ -40,10 +36,6 @@ export default function AdminProjects() {
     navigate(`/admin/projects/${projectId}`);
   };
 
-  const handleDelete = (projectId) => {
-    navigate(`/admin/projects/${projectId}`);
-  };
-
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -57,8 +49,6 @@ export default function AdminProjects() {
 
     fetchProjects();
   }, []);
-
-
 
   return (
     <div className=" bg-neutral-950 h-full w-full p-6">
@@ -121,7 +111,6 @@ export default function AdminProjects() {
                 setProjects={setProjects}
                 project={project}
                 handleEdit={handleEdit}
-                handleDelete={handleDelete}
               />
             ))}
           </div>
@@ -138,8 +127,6 @@ export default function AdminProjects() {
       {error && <p className="text-red-500 text-center">{error}</p>}
 
       <ToastInit />
-
-     
     </div>
   );
 }

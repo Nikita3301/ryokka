@@ -3,6 +3,7 @@ import Header from "components/Header";
 import Footer from "components/Footer";
 import AppRouter from "src/AppRouter";
 import { BrowserRouter } from "react-router-dom";
+import ToastInit from "./components/ToastInit";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <div className="bottom-0">
           <Footer />
         </div>
+        <ToastInit/>
       </BrowserRouter>
     </div>
   );

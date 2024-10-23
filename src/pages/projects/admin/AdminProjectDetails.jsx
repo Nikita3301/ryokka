@@ -14,8 +14,6 @@ import {
 import { faCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -26,6 +24,12 @@ import ExcelExport from "../../../services/ExcelExport";
 import ProjectImagesComponent from "../ProjectImagesComponent";
 import { getAllEmployees } from "../../../services/EmployeeService";
 import { EnvelopeIcon, PhoneIcon } from "@heroicons/react/24/outline";
+import { removeEmployeeFromProject } from "../../../services/ProjectEmployeeService";
+import AssignEmployeeModal from "./AssignEmployeeModal";
+import { toast } from "react-toastify";
+import AddInvoiceForm from "./AddInvoiceForm";
+import InvoicesTab from "./InvoicesTab";
+import ResourcesTab from "./ResourcesTab";
 
 export default function ProjectDetails() {
   const navigate = useNavigate();
@@ -35,12 +39,24 @@ export default function ProjectDetails() {
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState([]);
 
   const [employees, setEmployees] = useState(null);
-  const [clientToEdit, setClientToEdit] = useState(null);
 
   const [activeTab, setActiveTab] = useState("Employees");
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedProject, setEditedProject] = useState({ ...project });
+
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [selectedAssignEmployee, setSelectedAssignEmployee] = useState(null);
+
+  const openAssignModal = (employee) => {
+    setSelectedAssignEmployee(employee);
+    setIsAssignModalOpen(true);
+  };
+
+  const closeAssignModal = () => {
+    setSelectedAssignEmployee(null);
+    setIsAssignModalOpen(false);
+  };
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -65,7 +81,6 @@ export default function ProjectDetails() {
 
   const fetchAllClients = async () => {
     const response = await getAllClients();
-    // console.log("client", response);
     setClients(response);
   };
 
@@ -81,51 +96,30 @@ export default function ProjectDetails() {
   }, []);
 
   const handleEditToggle = () => {
-    setIsEditing(!isEditing); // Toggle edit mode
+    setIsEditing(!isEditing);
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setEditedProject({ ...editedProject, [name]: value }); // Update edited project
+    setEditedProject({ ...editedProject, [name]: value });
   };
 
   const handleSave = () => {
-    // Save the changes (add your save logic here)
     console.log("Saved project:", editedProject);
-    setIsEditing(false); // Exit edit mode
+    setIsEditing(false);
   };
 
-  const handleCheckboxChange = (employeeId) => {
-    setSelectedEmployeeIds((prevSelected) => {
-      if (prevSelected.includes(employeeId)) {
-        return prevSelected.filter((id) => id !== employeeId);
-      } else {
-        return [...prevSelected, employeeId];
-      }
-    });
-  };
-
-  const toggleEmployeeAssignment = (employeeId) => {
-    if (selectedEmployeeIds.includes(employeeId)) {
-      // Logic to unassign the employee
+  const removeEmployeeAssignment = async (employeeId) => {
+    try {
+      await removeEmployeeFromProject(employeeId, project.projectId);
       setSelectedEmployeeIds((prevSelected) =>
         prevSelected.filter((id) => id !== employeeId)
       );
-      console.log("Removing Employee:", employeeId);
-    } else {
-      // Logic to assign the employee
-      setSelectedEmployeeIds((prevSelected) => [...prevSelected, employeeId]);
-      console.log("Assigning Employee:", employeeId);
+      toast.success("Employee removed from project successfully.");
+    } catch (error) {
+      console.log(error);
+      toast.error("Error removing employee from project");
     }
-  };
-
-  const addEmployees = () => {
-    console.log("Adding Employees:", selectedEmployeeIds);
-  };
-
-  const removeEmployees = () => {
-    console.log("Removing Employees:", selectedEmployeeIds);
-    setSelectedEmployeeIds([]);
   };
 
   if (!project) return <p className="text-neutral-400">Loading...</p>;
@@ -379,17 +373,6 @@ export default function ProjectDetails() {
 
           <button
             className={`px-4 py-2 ${
-              activeTab === "Clients"
-                ? "text-teal-500 border-b-2 border-teal-500"
-                : "border-b-2 border-transparent"
-            }`}
-            onClick={() => setActiveTab("Clients")}
-          >
-            Clients
-          </button>
-
-          <button
-            className={`px-4 py-2 ${
               activeTab === "Invoices"
                 ? "text-teal-500 border-b-2 border-teal-500"
                 : "border-b-2 border-transparent"
@@ -471,7 +454,9 @@ export default function ProjectDetails() {
                                   </div>
                                 )}
                               </td>
-                              <td className="px-4 py-2 font-semibold">{employee.jobTitle}</td>
+                              <td className="px-4 py-2 font-semibold">
+                                {employee.jobTitle}
+                              </td>
                               <td className="px-4 py-2 ">
                                 <div className="gap-2 flex flex-col">
                                   <p className="inline-flex items-center gap-3">
@@ -486,11 +471,15 @@ export default function ProjectDetails() {
                               </td>
                               <td className="px-4 py-2 text-center">
                                 <button
-                                  onClick={() =>
-                                    toggleEmployeeAssignment(
+                                  onClick={() => {
+                                    selectedEmployeeIds.includes(
                                       employee.employeeId
                                     )
-                                  }
+                                      ? removeEmployeeAssignment(
+                                          employee.employeeId
+                                        )
+                                      : openAssignModal(employee);
+                                  }}
                                   className={`px-3 py-1 text-sm font-semibold rounded-lg ${
                                     selectedEmployeeIds.includes(
                                       employee.employeeId
@@ -526,175 +515,57 @@ export default function ProjectDetails() {
             </div>
           )}
 
-          {activeTab === "Clients" && (
-            <div className="flex flex-col items-center gap-4">
-              <button
-                className="bg-blue-500 text-white p-2 rounded-md"
-                onClick={() => setClientToEdit(null)} // Set to null for adding new client
-              >
-                Add New Client
-              </button>
-
-              {/* Client Form for Adding or Editing */}
-              {/* <ClientForm clientToEdit={clientToEdit} onSave={handleSave} /> */}
-
-              {/* Client List */}
-              <div className="bg-neutral-900 p-4 rounded-lg w-full">
-                <h2 className="text-white text-2xl mb-4">Clients</h2>
-                {clients?.length > 0 ? (
-                  <div>
-                    {clients.map((client) => (
-                      <div
-                        key={client.clientId}
-                        className="p-2 flex justify-between bg-neutral-800 text-gray-100 rounded-md mb-2"
-                      >
-                        <div>
-                          <p className="font-bold">
-                            {client.firstName} {client.lastName}
-                          </p>
-                          <p className="text-sm text-neutral-400">
-                            {client.contactEmail}
-                          </p>
-                          <p className="text-sm text-neutral-400">
-                            {client.contactPhone}
-                          </p>
-                        </div>
-                        <button
-                          className="text-blue-500"
-                          onClick={() => setClientToEdit(client)} // Set clientToEdit to populate the form for editing
-                        >
-                          Edit
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-400">No clients available.</p>
-                )}
-              </div>
-            </div>
-          )}
-
           {activeTab === "Invoices" && (
-            <div>
-              <div className="overflow-x-auto p-3">
-                {project.invoices.length > 0 ? (
-                  <table className="min-w-full divide-y divide-neutral-900 ">
-                    <thead className="bg-neutral-950 text-neutral-400 text-sm font-medium text-center">
-                      <tr>
-                        <th className="px-6 py-2">Name</th>
-                        <th className="px-6 py-2 text-left">Description</th>
-                        <th className="px-6 py-2">Issue Date</th>
-                        <th className="px-6 py-2">Total Amount</th>
-                        <th className="px-6 py-2">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-neutral-900 divide-y text-center divide-neutral-600 text-sm">
-                      {project.invoices.map((invoice) => (
-                        <tr key={invoice.invoiceId}>
-                          <td className="px-6 py-4 whitespace-nowrap ">
-                            {invoice.invoiceName}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-left">
-                            {invoice.invoiceDescription}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {format(invoice.issueDate, "dd.MM.yyyy")}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            ${invoice.totalAmount}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-center">
-                            <p
-                              className={`px-1 py-1 flex justify-center items-center gap-2 font-semibold rounded-lg ${
-                                invoice.invoiceStatus === "Paid"
-                                  ? "bg-green-600 text-green-600 bg-opacity-20"
-                                  : invoice.invoiceStatus === "Pending"
-                                  ? "bg-yellow-600 text-yellow-600 bg-opacity-20"
-                                  : "bg-red-600 text-red-600 bg-opacity-20"
-                              }`}
-                            >
-                              <FontAwesomeIcon
-                                icon={faCircle}
-                                className="w-2 h-2"
-                              />
-                              {invoice.invoiceStatus}
-                            </p>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <div className=" text-white p-6 rounded-lg flex flex-col justify-center items-center gap-2">
-                    <BanknotesIcon className="size-10 rounded-lg p-1 border-neutral-800 bg-neutral-600 text-neutral-500 bg-opacity-30" />
-                    <h2 className="text-lg text-center font-semibold">
-                      Project doesn't have any invoices yet.
-                    </h2>
-                    <p className="text-neutral-500 pb-6">
-                      I feel sorry for you....
-                    </p>
-                    {/* <button className="w-56 px-2 py-1.5 font-semibold border-2 border-red-800 bg-red-600 text-red-500 bg-opacity-30 rounded hover:bg-opacity-50">
-                    Delete
-                  </button> */}
-                  </div>
-                )}
-              </div>
-              <div className="w-full flex justify-center p-5">
-                <ExcelExport
-                  excelData={project.invoices}
-                  fileName={"Invoices"}
-                />
-              </div>
-            </div>
+            <InvoicesTab project={project} projectId={projectId}/>
           )}
 
           {activeTab === "Resources" && (
-            <div className="overflow-x-auto">
-              {project.resources.length > 0 ? (
-                <table className="min-w-full divide-y divide-neutral-900 ">
-                  <thead className="bg-neutral-950 text-neutral-400 text-sm font-medium text-center">
-                    <tr>
-                      <th className="px-6 py-3">Name</th>
-                      <th className="px-6 py-3 text-left">Description</th>
-                      <th className="px-6 py-3">Type</th>
-                      <th className="px-6 py-3">Unit of Measure</th>
-                      <th className="px-6 py-3">Unit Cost</th>
-                      <th className="px-6 py-3">Quantity</th>
-                      <th className="px-6 py-3">General Price</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-neutral-900 divide-y text-center divide-neutral-600 text-sm">
-                    {project.resources.map((resource) => (
-                      <tr key={resource.resourceId}>
-                        <td className="px-6 py-4">{resource.resourceName}</td>
-                        <td className="px-6 py-4 text-left">
-                          {resource.resourceDescription}
-                        </td>
-                        <td className="px-6 py-4">{resource.resourceType}</td>
-                        <td className="px-6 py-4">{resource.unitOfMeasure}</td>
-                        <td className="px-6 py-4">${resource.unitCost}</td>
-                        <td className="px-6 py-4">{resource.quantity}</td>
-                        <td className="px-6 py-4">${resource.generalPrice}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <div className=" text-white p-6 rounded-lg flex flex-col justify-center items-center gap-2">
-                  <BanknotesIcon className="size-10 rounded-lg p-1 border-neutral-800 bg-neutral-600 text-neutral-500 bg-opacity-30" />
-                  <h2 className="text-lg text-center font-semibold">
-                    Project doesn't have any resouces yet.
-                  </h2>
-                  <p className="text-neutral-500 pb-6">
-                    I feel sorry for you....
-                  </p>
-                  {/* <button className="w-56 px-2 py-1.5 font-semibold border-2 border-red-800 bg-red-600 text-red-500 bg-opacity-30 rounded hover:bg-opacity-50">
-                    Delete
-                  </button> */}
-                </div>
-              )}
-            </div>
+            <ResourcesTab project={project} projectId={projectId}/>
+            // <div className="overflow-x-auto">
+            //   {project.resources.length > 0 ? (
+            //     <table className="min-w-full divide-y divide-neutral-900 ">
+            //       <thead className="bg-neutral-950 text-neutral-400 text-sm font-medium text-center">
+            //         <tr>
+            //           <th className="px-6 py-3">Name</th>
+            //           <th className="px-6 py-3 text-left">Description</th>
+            //           <th className="px-6 py-3">Type</th>
+            //           <th className="px-6 py-3">Unit of Measure</th>
+            //           <th className="px-6 py-3">Unit Cost</th>
+            //           <th className="px-6 py-3">Quantity</th>
+            //           <th className="px-6 py-3">General Price</th>
+            //         </tr>
+            //       </thead>
+            //       <tbody className="bg-neutral-900 divide-y text-center divide-neutral-600 text-sm">
+            //         {project.resources.map((resource) => (
+            //           <tr key={resource.resourceId}>
+            //             <td className="px-6 py-4">{resource.resourceName}</td>
+            //             <td className="px-6 py-4 text-left">
+            //               {resource.resourceDescription}
+            //             </td>
+            //             <td className="px-6 py-4">{resource.resourceType}</td>
+            //             <td className="px-6 py-4">{resource.unitOfMeasure}</td>
+            //             <td className="px-6 py-4">${resource.unitCost}</td>
+            //             <td className="px-6 py-4">{resource.quantity}</td>
+            //             <td className="px-6 py-4">${resource.generalPrice}</td>
+            //           </tr>
+            //         ))}
+            //       </tbody>
+            //     </table>
+            //   ) : (
+            //     <div className=" text-white p-6 rounded-lg flex flex-col justify-center items-center gap-2">
+            //       <BanknotesIcon className="size-10 rounded-lg p-1 border-neutral-800 bg-neutral-600 text-neutral-500 bg-opacity-30" />
+            //       <h2 className="text-lg text-center font-semibold">
+            //         Project doesn't have any resouces yet.
+            //       </h2>
+            //       <p className="text-neutral-500 pb-6">
+            //         I feel sorry for you....
+            //       </p>
+            //       {/* <button className="w-56 px-2 py-1.5 font-semibold border-2 border-red-800 bg-red-600 text-red-500 bg-opacity-30 rounded hover:bg-opacity-50">
+            //         Delete
+            //       </button> */}
+            //     </div>
+            //   )}
+            // </div>
           )}
 
           {activeTab === "Gallery" && (
@@ -712,13 +583,15 @@ export default function ProjectDetails() {
           )}
         </div>
       </div>
-      <ToastContainer
-        position="bottom-center"
-        autoClose={3000}
-        limit={3}
-        theme="dark"
-        stacked
-      />
+
+      {isAssignModalOpen && (
+        <AssignEmployeeModal
+          employee={selectedAssignEmployee}
+          project={project}
+          setSelectedEmployeeIds={setSelectedEmployeeIds}
+          onClose={closeAssignModal}
+        />
+      )}
     </div>
   );
 }

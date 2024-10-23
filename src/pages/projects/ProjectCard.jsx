@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState} from "react";
 
 import {
   CalendarDateRangeIcon,
@@ -16,10 +16,7 @@ export default function ProjectCard({
   handleViewDetails,
   handleEdit,
 }) {
-  
-  //delete modal
   const [isDelModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedDelItem, setSelectedDelItem] = useState(null);
 
   const handleDelete = () => {
     setIsDeleteModalOpen(true);

@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTwitter } from "@fortawesome/free-brands-svg-icons";
-import { faLinkedin } from "@fortawesome/free-brands-svg-icons";
 
 import { getAllEmployees } from "services/EmployeeService";
 
@@ -21,13 +18,10 @@ export default function ProjectTeam() {
 
         setUniquePositions(uniquePositionsSet);
         setEmployees(data);
-      
-      
 
         if (uniquePositionsSet.length > 0) {
           setActivePosition(uniquePositionsSet[0]);
         }
-       
       } catch (error) {
         console.error("Error fetching employees:", error);
       }
@@ -76,27 +70,6 @@ export default function ProjectTeam() {
                     {member.firstName} {member.lastName}
                   </h3>
                   <p className="text-sm text-gray-400 mb-2">{member.role}</p>
-
-                  {/* <div className="flex space-x-4 mt-2">
-                    <a
-                      href={member.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-teal-400 hover:text-teal-500 transition-colors"
-                      title="LinkedIn profile" // Accessibility
-                    >
-                      <FontAwesomeIcon icon={faLinkedin} className="w-6 h-6" />
-                    </a>
-                    <a
-                      href={member.twitter}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-purple-400 hover:text-purple-500 transition-colors"
-                      title="Twitter profile" // Accessibility
-                    >
-                      <FontAwesomeIcon icon={faTwitter} className="w-6 h-6" />
-                    </a>
-                  </div> */}
                 </div>
               ))}
           </div>
