@@ -29,9 +29,9 @@
 }
 
 .swiper-pagination-bullet {
-  background-color: teal; /* Change to your preferred color */
+  background-color: teal;
 }
 
 .swiper-pagination-bullet-active {
-  background-color: teal; /* Change the active dot color */
+  background-color: teal; 
 }

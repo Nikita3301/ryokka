@@ -38,11 +38,9 @@ export default function AdminProjectTeam() {
     phoneNumber: "",
   });
 
-  // Delete values
   const [selectedDelItem, setSelectedDelItem] = useState(null);
   const [isDelModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  // Add a new employee
   const addTeamMember = async () => {
     if (
       newEmployee.imageUrl &&
@@ -87,7 +85,6 @@ export default function AdminProjectTeam() {
     }
   };
 
-  // Update employee
   const startEditing = (employee) => {
     setEditingId(employee.employeeId);
     setUpdatedEmployee(employee);
@@ -143,13 +140,11 @@ export default function AdminProjectTeam() {
       toast.error("Please fill out all fields.");
     }
   };
-
-  // Delete modal handlers
   const handleDeleteClick = (item) => {
     setSelectedDelItem(item);
     setIsDeleteModalOpen(true);
   };
-  
+
   const handleDeleteConfirm = async () => {
     try {
       await deleteEmployeeById(selectedDelItem.employeeId);
@@ -183,7 +178,6 @@ export default function AdminProjectTeam() {
 
   return (
     <div className="min-h-screen bg-neutral-950 p-6 text-gray-200">
-      {/* Add Team employee Form */}
       <div className="bg-neutral-900 p-4 rounded-lg mb-8">
         <h2 className="text-2xl font-semibold mb-6 text-center">
           Add new employee
@@ -528,7 +522,6 @@ export default function AdminProjectTeam() {
           </tbody>
         </table>
       </div>
-      {/* Delete Modal */}
       <DeleteModal
         isOpen={isDelModalOpen}
         onClose={handleCloseDeleteModal}

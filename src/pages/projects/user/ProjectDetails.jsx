@@ -9,8 +9,6 @@ import {
   CheckBadgeIcon,
   CurrencyDollarIcon,
 } from "@heroicons/react/24/solid";
-import { faCircle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -20,7 +18,7 @@ import ImageGalleryComponent from "../../../components/ImageGalleryComponent";
 import ProjectImagesComponent from "../ProjectImagesComponent";
 
 export default function ProjectDetails() {
-  const { projectId } = useParams(); // Get project ID from URL
+  const { projectId } = useParams();
   const [project, setProject] = useState(null);
   const [activeTab, setActiveTab] = useState("Gallery");
 

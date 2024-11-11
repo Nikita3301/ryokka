@@ -1,8 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080/api/project-employees'; // Base URL for the project-employee API
+const API_BASE_URL = 'http://localhost:8080/api/project-employees';
 
-// Create an axios instance for API requests
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
   timeout: 5000,
@@ -11,7 +10,6 @@ const axiosInstance = axios.create({
   },
 });
 
-// Assign an employee to a project
 export const assignEmployeeToProject = async (employeeId, projectId, startDate, endDate, role) => {
   try {
     const response = await axiosInstance.post('/assign', null, {
@@ -26,11 +24,10 @@ export const assignEmployeeToProject = async (employeeId, projectId, startDate, 
     return response.data; 
   } catch (error) {
     console.error('Error assigning employee to project:', error);
-    throw error; // Rethrow error for handling in the component
+    throw error;
   }
 };
 
-// Remove an employee from a project
 export const removeEmployeeFromProject = async (employeeId, projectId) => {
   try {
     const response = await axiosInstance.delete('/remove', {
@@ -39,14 +36,13 @@ export const removeEmployeeFromProject = async (employeeId, projectId) => {
         projectId: projectId,
       },
     });
-    return response.data; // Return the API response
+    return response.data;
   } catch (error) {
     console.error('Error removing employee from project:', error);
-    throw error; // Rethrow error for handling in the component
+    throw error;
   }
 };
 
-// Get all employees assigned to a specific project
 export const getEmployeesByProject = async (projectId) => {
   try {
     const response = await axiosInstance.get('/employees', {
@@ -54,14 +50,13 @@ export const getEmployeesByProject = async (projectId) => {
         projectId: projectId,
       },
     });
-    return response.data; // Return the list of employees
+    return response.data;
   } catch (error) {
     console.error('Error fetching employees by project:', error);
-    throw error; // Rethrow error for handling in the component
+    throw error; 
   }
 };
 
-// Get all projects assigned to a specific employee
 export const getProjectsByEmployee = async (employeeId) => {
   try {
     const response = await axiosInstance.get('/projects', {
@@ -69,9 +64,9 @@ export const getProjectsByEmployee = async (employeeId) => {
         employeeId: employeeId,
       },
     });
-    return response.data; // Return the list of projects
+    return response.data; 
   } catch (error) {
     console.error('Error fetching projects by employee:', error);
-    throw error; // Rethrow error for handling in the component
+    throw error;
   }
 };

@@ -31,12 +31,11 @@ export default function ProjectTeam() {
 
   return (
     <div className="min-h-screen bg-neutral-950 p-6 text-gray-200">
-      {/* Tabs at the top */}
       <div className="flex justify-center space-x-4 mb-8">
         {uniquePositions.length > 0 &&
           uniquePositions.map((jobTitle) => (
             <button
-              key={jobTitle} // Key by jobTitle for efficient updates
+              key={jobTitle}
               onClick={() => setActivePosition(jobTitle)}
               className={`px-4 py-2 rounded-lg ${
                 activePosition === jobTitle
@@ -49,7 +48,6 @@ export default function ProjectTeam() {
           ))}
       </div>
 
-      {/* Team Members */}
       {employees.length > 0 ? (
         <div className="flex flex-col items-center justify-center">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -57,9 +55,9 @@ export default function ProjectTeam() {
               .filter((division) => division.jobTitle === activePosition)
               .map((member) => (
                 <div
-                  key={member.email} // Ensure unique key for team members
+                  key={member.email}
                   className="bg-neutral-900 p-6 rounded-2xl shadow-lg flex flex-col items-center text-center transform transition-transform hover:scale-105"
-                  aria-label={`Team member card for ${member.name}`} // Accessibility
+                  aria-label={`Team member card for ${member.name}`}
                 >
                   <img
                     src={member.imageUrl}

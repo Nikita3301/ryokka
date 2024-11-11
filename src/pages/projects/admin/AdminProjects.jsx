@@ -52,7 +52,6 @@ export default function AdminProjects() {
 
   return (
     <div className=" bg-neutral-950 h-full w-full p-6">
-      {/* Tab Navigation */}
       <div className="pb-6 flex gap-4">
         <button
           className={`px-4 py-2 rounded-lg ${

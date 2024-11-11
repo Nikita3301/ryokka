@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 export const ClientForm = ({ clientToEdit, onSave }) => {
-    // State to store client data
   const [clientData, setClientData] = useState({
     firstName: "",
     lastName: "",
@@ -10,14 +9,12 @@ export const ClientForm = ({ clientToEdit, onSave }) => {
     contactEmail: "",
   });
 
-  // If clientToEdit is provided, populate the form with existing client data
   useEffect(() => {
     if (clientToEdit) {
       setClientData(clientToEdit);
     }
   }, [clientToEdit]);
 
-  // Handler for form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setClientData({
@@ -26,18 +23,15 @@ export const ClientForm = ({ clientToEdit, onSave }) => {
     });
   };
 
-  // Handle form submission for either adding or updating a client
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (clientToEdit) {
-      // Update existing client
       await axios.put(`/api/clients/${clientData.clientId}`, clientData);
     } else {
-      // Add new client
       await axios.post("/api/clients", clientData);
     }
 
-    onSave(); // Notify parent to refresh client list or close form
+    onSave();
   };
 
   return (

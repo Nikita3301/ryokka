@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { createProject } from "services/ProjectsService";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -120,7 +119,7 @@ export default function NewProjectForm({setProjects, setActiveTab }) {
   }, []);
 
   return (
-    <div className="w-5/6 bg-neutral-900 rounded-3xl shadow max-w-xl overflow-auto scrollbar-thin">
+    <div className="w-5/6 bg-neutral-900 rounded-3xl shadow max-w-4xl overflow-auto scrollbar-thin">
       <form
         onSubmit={handleCreateProject}
         className=" text-neutral-300 text-semibold"
@@ -170,7 +169,6 @@ export default function NewProjectForm({setProjects, setActiveTab }) {
             </div>
           </div>
 
-          {/* Project Location */}
           <label htmlFor="projectLocation" className="w-full text-left">
             Project Location
           </label>
@@ -183,7 +181,6 @@ export default function NewProjectForm({setProjects, setActiveTab }) {
             onChange={(e) => setProjectLocation(e.target.value)}
           />
 
-          {/* Project Budget */}
           <label htmlFor="projectBudget" className="w-full text-left">
             Project Budget
           </label>
@@ -196,9 +193,7 @@ export default function NewProjectForm({setProjects, setActiveTab }) {
             onChange={(e) => setProjectBudget(e.target.value)}
           />
 
-          {/* Start Date and End Date */}
           <div className="w-full flex justify-around h-24">
-            {/* Start Date */}
             <div className="flex flex-col gap-2 py-2">
               <label htmlFor="startDate">Start date</label>
               <DatePicker
@@ -216,7 +211,6 @@ export default function NewProjectForm({setProjects, setActiveTab }) {
               />
             </div>
 
-            {/* End Date */}
             <div className="flex flex-col gap-2 py-2">
               <label htmlFor="endDate">End date</label>
               <DatePicker
@@ -236,7 +230,6 @@ export default function NewProjectForm({setProjects, setActiveTab }) {
             </div>
           </div>
 
-          {/* Client Selection */}
           <label htmlFor="clientId" className="w-full text-left">
             Client
           </label>
@@ -327,6 +320,7 @@ export default function NewProjectForm({setProjects, setActiveTab }) {
                       }
                       className="flex text-center py-1.5 font-semibold bg-neutral-800 rounded-md border-2 border-teal-500 text-neutral-300 focus:outline-none"
                       maxDate={new Date()}
+                      minDate={startDate}
                       selected={selectedFiles[index]?.date}
                       onChange={(date) => {
                         setSelectedFiles((prevFiles) =>

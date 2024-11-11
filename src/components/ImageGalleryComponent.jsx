@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { XMarkIcon, MapPinIcon } from "@heroicons/react/24/solid";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon} from "@heroicons/react/24/solid";
 import { getProjectImagesById } from "services/GalleryService";
 import { getProjectById } from "services/ProjectsService";
 import { toast, ToastContainer } from "react-toastify";
@@ -62,7 +60,6 @@ export default function ImageGalleryComponent(projectId) {
     fetchProject();
   }, [projectId]);
 
-  // Group and sort images by year
   images.forEach((image) => {
     const date = new Date(image.date);
     const year = date.getFullYear();
@@ -85,16 +82,14 @@ export default function ImageGalleryComponent(projectId) {
 
   return (
     <div className="flex flex-col h-full bg-neutral-950 w-full text-gray-200">
-      
       {sortedYears.map((year) => (
         <div key={year} className="p-6">
           <h2 className="text-2xl font-bold text-gray-100 mb-4">{year}</h2>
-          {/* Grid layout for gallery items */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-8 p-6">
             {loading
               ? Array(9)
                   .fill(0)
-                  .map((_, index) => <Skeleton key={index} />) // Render skeleton loaders while loading
+                  .map((_, index) => <Skeleton key={index} />)
               : groupedImagesByYear[year].map((item) => (
                   <div
                     key={item.imageId}
@@ -113,7 +108,6 @@ export default function ImageGalleryComponent(projectId) {
         </div>
       ))}
 
-      {/* Modal for selected image */}
       {selectedImage && (
         <div
           className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-10"
@@ -130,9 +124,7 @@ export default function ImageGalleryComponent(projectId) {
               <XMarkIcon className="h-8 w-8 text-teal-500" />
             </div>
 
-            {/* Modal content */}
             <div className="flex flex-col lg:flex-row max-h-[95vh]">
-              {/* Image */}
               <div className="relative">
                 <img
                   src={selectedImage.imageUrl}

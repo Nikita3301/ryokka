@@ -131,7 +131,6 @@ export default function ProjectDetails() {
           <ProjectImagesComponent projectId={projectId} />
 
           <div className="flex flex-col gap-4 p-4">
-            {/* Project Name and Edit Button */}
             <div className="flex justify-between items-center">
               {isEditing ? (
                 <input
@@ -147,7 +146,6 @@ export default function ProjectDetails() {
                 </h1>
               )}
 
-              {/* Toggle edit/save button */}
               <button
                 onClick={isEditing ? handleSave : handleEditToggle}
                 className="btn-primary"
@@ -218,7 +216,6 @@ export default function ProjectDetails() {
               )}
             </div>
 
-            {/* Client Details */}
             <div className="flex flex-col gap-2">
               <p className="text-neutral-300 font-semibold">Client</p>
               <div className="flex items-center justify-start gap-4 bg-neutral-900 py-1.5 px-4 rounded-lg w-fit">
@@ -255,7 +252,6 @@ export default function ProjectDetails() {
               </div>
             </div>
 
-            {/* Overview */}
             <div className="flex flex-col gap-2">
               <p className="text-neutral-300 font-semibold">Overview</p>
 
@@ -508,7 +504,7 @@ export default function ProjectDetails() {
                     No employees yet
                   </h2>
                   <p className="text-neutral-500 pb-6">
-                    I feel sorry for you....
+                    No data found ....
                   </p>
                 </div>
               )}
@@ -521,51 +517,6 @@ export default function ProjectDetails() {
 
           {activeTab === "Resources" && (
             <ResourcesTab project={project} projectId={projectId}/>
-            // <div className="overflow-x-auto">
-            //   {project.resources.length > 0 ? (
-            //     <table className="min-w-full divide-y divide-neutral-900 ">
-            //       <thead className="bg-neutral-950 text-neutral-400 text-sm font-medium text-center">
-            //         <tr>
-            //           <th className="px-6 py-3">Name</th>
-            //           <th className="px-6 py-3 text-left">Description</th>
-            //           <th className="px-6 py-3">Type</th>
-            //           <th className="px-6 py-3">Unit of Measure</th>
-            //           <th className="px-6 py-3">Unit Cost</th>
-            //           <th className="px-6 py-3">Quantity</th>
-            //           <th className="px-6 py-3">General Price</th>
-            //         </tr>
-            //       </thead>
-            //       <tbody className="bg-neutral-900 divide-y text-center divide-neutral-600 text-sm">
-            //         {project.resources.map((resource) => (
-            //           <tr key={resource.resourceId}>
-            //             <td className="px-6 py-4">{resource.resourceName}</td>
-            //             <td className="px-6 py-4 text-left">
-            //               {resource.resourceDescription}
-            //             </td>
-            //             <td className="px-6 py-4">{resource.resourceType}</td>
-            //             <td className="px-6 py-4">{resource.unitOfMeasure}</td>
-            //             <td className="px-6 py-4">${resource.unitCost}</td>
-            //             <td className="px-6 py-4">{resource.quantity}</td>
-            //             <td className="px-6 py-4">${resource.generalPrice}</td>
-            //           </tr>
-            //         ))}
-            //       </tbody>
-            //     </table>
-            //   ) : (
-            //     <div className=" text-white p-6 rounded-lg flex flex-col justify-center items-center gap-2">
-            //       <BanknotesIcon className="size-10 rounded-lg p-1 border-neutral-800 bg-neutral-600 text-neutral-500 bg-opacity-30" />
-            //       <h2 className="text-lg text-center font-semibold">
-            //         Project doesn't have any resouces yet.
-            //       </h2>
-            //       <p className="text-neutral-500 pb-6">
-            //         I feel sorry for you....
-            //       </p>
-            //       {/* <button className="w-56 px-2 py-1.5 font-semibold border-2 border-red-800 bg-red-600 text-red-500 bg-opacity-30 rounded hover:bg-opacity-50">
-            //         Delete
-            //       </button> */}
-            //     </div>
-            //   )}
-            // </div>
           )}
 
           {activeTab === "Gallery" && (

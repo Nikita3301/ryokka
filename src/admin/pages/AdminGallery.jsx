@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { XMarkIcon, CloudArrowUpIcon } from "@heroicons/react/24/solid";
 import { getAllProjects } from "services/ProjectsService";
-import { getAllProjectImages } from "services/GalleryService";
 
 export default function AdminGallery() {
   const navigate = useNavigate();
@@ -27,7 +25,6 @@ export default function AdminGallery() {
   };
   return (
     <div className="flex flex-col h-full p-6 bg-neutral-950 w-full text-gray-200">
-      {/* Grid layout for gallery items */}
       <div className="grid grid-cols-1 md:grid-cols-2  gap-8 p-6">
         {projects.map((item) => (
           <div

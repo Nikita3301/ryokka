@@ -4,14 +4,13 @@ import LogoImg from "/logo.svg"
 
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebook, faTwitter, faLinkedin, faInstagram } from '@fortawesome/free-brands-svg-icons';
+import { faFacebook, faLinkedin, faInstagram } from '@fortawesome/free-brands-svg-icons';
 
 export default function Footer() {
   return (
     <footer className="bg-neutral-900 text-gray-300 py-3">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col md:flex-row justify-between items-center font-semibold">
-          {/* Logo */}
           <div className="flex items-center gap-2 mb-4 md:mb-0">
             <img
               src={LogoImg}
@@ -23,14 +22,12 @@ export default function Footer() {
           </NavLink>
           </div>
 
-          {/* Navigation Links */}
           <div className="flex flex-col md:flex-row gap-4 mb-4 md:mb-0">
             <a href="/home" className="hover:text-gray-400">Dashboard</a>
             <a href="/services" className="hover:text-gray-400">Services</a>
             <a href="/contacts" className="hover:text-gray-400">Contact</a>
           </div>
 
-          {/* Social Media Links */}
           <div className="flex space-x-4">
             <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-gray-400">
               <FontAwesomeIcon icon={faFacebook} className="w-6 h-6" />
@@ -44,7 +41,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Copyright */}
         <div className="mt-2 text-center text-sm">
           &copy; {new Date().getFullYear()} Ryokka. All rights reserved.
         </div>

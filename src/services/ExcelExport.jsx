@@ -14,11 +14,11 @@ const ExcelExport = ({ excelData, fileName }) => {
       console.error("Invalid data passed for export:", excelData);
       return;
     }
-    const ws = XLSX.utils.json_to_sheet(excelData); // Convert JSON to worksheet
-    const wb = { Sheets: { data: ws }, SheetNames: ["data"] }; // Create workbook with sheet
-    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" }); // Write workbook to array
-    const data = new Blob([excelBuffer], { type: fileType }); // Create a blob
-    FileSaver.saveAs(data, fileName + fileExtension); // Use FileSaver to download the file
+    const ws = XLSX.utils.json_to_sheet(excelData);
+    const wb = { Sheets: { data: ws }, SheetNames: ["data"] }; 
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" }); 
+    const data = new Blob([excelBuffer], { type: fileType });
+    FileSaver.saveAs(data, fileName + fileExtension); 
     toast.success("File succesfully exported!")
   };
 

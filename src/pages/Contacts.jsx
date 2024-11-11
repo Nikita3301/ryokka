@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope } from "@fortawesome/free-solid-svg-icons"; // For email icon
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { faTelegram } from "@fortawesome/free-brands-svg-icons";
 
 export default function Contacts() {
@@ -24,7 +24,6 @@ export default function Contacts() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Form submitted", formData);
-    // Handle form submission logic
   };
 
   const handleServiceChange = (e) => {

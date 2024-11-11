@@ -35,10 +35,17 @@ const Signup = () => {
   const [validation, setValidation] = useState("");
 
   const SignUpWithGoogle = async () => {
-    try {
+    
       const provider = new GoogleAuthProvider();
 
-      const result = await signInWithPopup(auth, provider);
+      let result;
+      try {
+        result = await signInWithPopup(auth, provider);
+      } catch (error) {
+        console.error("Error during sign-in with popup:", error);
+        toast.error(`There was an issue signing up with Google: ${error.message}. Please try again.`);
+        return;
+      }
 
       const credential = GoogleAuthProvider.credentialFromResult(result);
       if (!credential) {
@@ -51,20 +58,22 @@ const Signup = () => {
       navigate("/admin/projects");
 
       console.log(user, token);
-    } catch (error) {
+      toast.success("Successfully signed up with Google!");
       toast.error(
         "There was an issue signing up with Google. Please try again."
       );
-    }
+    
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
 
     setValidation("");
-    if (
-      (pwdRef.current.value.length || pwdConfirmRef.current.value.length) < 6
-    ) {
+    if (!email || !password || !repeatPassword) {
+      setValidation("All fields are required");
+      return;
+    }
+    if (pwdRef.current.value.length < 6 || pwdConfirmRef.current.value.length < 6) {
       setValidation("The password must contain at least 6 characters");
       return;
     }
@@ -74,19 +83,18 @@ const Signup = () => {
     }
 
     await createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
+      .then(() => {
         navigate("/login");
       })
       .catch((error) => {
         const errorCode = error.code;
-        if (errorCode == "auth/email-already-in-use") {
+        if (errorCode === "auth/email-already-in-use") {
           setValidation("The email address is already in use");
-        } else if (errorCode == "auth/invalid-email") {
+        } else if (errorCode === "auth/invalid-email") {
           setValidation("The email address is not valid.");
-        } else if (errorCode == "auth/operation-not-allowed") {
+        } else if (errorCode === "auth/operation-not-allowed") {
           setValidation("Operation not allowed.");
-        } else if (errorCode == "auth/weak-password") {
+        } else if (errorCode === "auth/weak-password") {
           setValidation("The password is too weak.");
         }
       });
@@ -210,7 +218,7 @@ const Signup = () => {
             </button>
 
             <div className="flex items-center justify-center h-3 my-5">
-              {validation && ErrorMessage(validation)}
+              {validation && <ErrorMessage message={validation} />}
             </div>
           </form>
 

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef} from "react";
 import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
@@ -29,34 +29,41 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [validation, setValidation] = useState("");
-
+  const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const pwdRef = useRef();
 
-  const onLogin = (e) => {
+  const onLogin = async (e) => {
     e.preventDefault();
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        user.getIdToken().then((token) => {
-          console.log("Firebase ID Token:", token);  // Log the token to verify
-          localStorage.setItem('firebaseToken', token);
-          navigate("/admin/projects");
-        })
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        if (errorCode == "auth/email-already-in-use") {
-          setValidation("The email address is already in use");
-        } else if (errorCode == "auth/invalid-email") {
-          setValidation("The email address is not valid.");
-        } else if (errorCode == "auth/operation-not-allowed") {
-          setValidation("Operation not allowed.");
-        } else if (errorCode == "auth/weak-password") {
-          setValidation("The password is too weak.");
-        }
-      });
+    if (!email || !password) {
+      setValidation("Email and password are required.");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      const token = await user.getIdToken();
+      console.log("Firebase ID Token:", token);
+      localStorage.setItem('firebaseToken', token);
+      navigate("/admin/projects");
+    } catch (error) {
+      const errorCode = error.code;
+      if (errorCode === "auth/user-not-found") {
+        setValidation("No user found with this email.");
+      } else if (errorCode === "auth/wrong-password") {
+        setValidation("Incorrect password.");
+      } else if (errorCode === "auth/invalid-email") {
+        setValidation("The email address is not valid.");
+      } else if (errorCode === "auth/user-disabled") {
+        setValidation("The user account has been disabled.");
+      } else {
+        setValidation("Login failed. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const triggerResetEmail = async () => {
@@ -72,23 +79,20 @@ const Login = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const user = result.user;
-        user.getIdToken().then((token) => {
-          console.log("Firebase ID Token:", token);  // Log the token to verify
-          localStorage.setItem('firebaseToken', token);
-          console.log("Google Login Success:", user);
-          navigate("/admin/projects");
-        })
-    
-      })
-      .catch((error) => {
-        console.error("Google Login Error:", error);
-        toast.error("Failed to log in with Google. Please try again.");
-      });
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const token = await user.getIdToken();
+      console.log("Firebase ID Token:", token);
+      localStorage.setItem('firebaseToken', token);
+      console.log("Google Login Success:", user);
+      navigate("/admin/projects");
+    } catch (error) {
+      console.error("Google Login Error:", error);
+      toast.error("Failed to log in with Google. Please try again.");
+    }
   };
 
   return (
@@ -107,7 +111,7 @@ const Login = () => {
           <div className="text-lg font-semibold flex justify-center text-white p-3">
             or
           </div>
-          <div className="flex flex-col">
+          <form onSubmit={onLogin} className="flex flex-col">
             <div className="flex flex-row justify-between gap-2">
               <label
                 htmlFor="email-address"
@@ -128,6 +132,7 @@ const Login = () => {
                 placeholder="Email address"
                 onChange={(e) => setEmail(e.target.value)}
                 className="bg-neutral-900 text-white rounded-xl pl-10 w-full font-medium block flex-1 text-sm p-2.5 border-2 border-teal-600 focus:outline-none focus:ring-1 focus:ring-teal-500 transition duration-500"
+                
               />
             </div>
 
@@ -153,9 +158,10 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
                 className="bg-neutral-900 text-white rounded-xl pl-10 w-full font-medium block flex-1 text-sm p-2.5 border-2 border-teal-600 focus:outline-none focus:ring-1 focus:ring-teal-500 transition duration-500"
+                
               />
               <div
-                className="absolute inset-y-0 right-0 flex items-center pr-3"
+                className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
                 onClick={handleShowPasswordToggle}
               >
                 {showPassword ? (
@@ -169,6 +175,7 @@ const Login = () => {
               <button
                 className="font-semibold text-yellow-300 mb-3"
                 onClick={() => setIsOpen(true)}
+                type="button"
               >
                 Forgot password?
               </button>
@@ -176,17 +183,21 @@ const Login = () => {
 
             <button
               type="submit"
-              onClick={onLogin}
               className="w-full bg-gradient-to-r font-semibold from-teal-600 via-teal-500 to-yellow-400 text-white py-2 px-2 rounded-md flex items-center justify-center space-x-2"
+              disabled={isLoading}
             >
-              <span>Login</span>
-              <ArrowRightIcon className="w-4 h-4" />
+              {isLoading ? "Logging in..." : (
+                <>
+                  <span>Login</span>
+                  <ArrowRightIcon className="w-4 h-4" />
+                </>
+              )}
             </button>
 
             <div className="flex items-center justify-center h-3 my-5">
               {validation && ErrorMessage(validation)}
             </div>
-          </div>
+          </form>
 
           <p className="text-white flex justify-center">
             No account yet?&nbsp;{" "}

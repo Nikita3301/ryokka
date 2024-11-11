@@ -20,7 +20,7 @@ const AssignEmployeeModal = ({
       employee.employeeId,
       project.projectId,
       startDate.toISOString().split("T")[0],
-      endDate ? endDate.toISOString().split("T")[0] : null, // Check if endDate is truthy
+      endDate ? endDate.toISOString().split("T")[0] : null, 
       role
     );
     try {
@@ -28,7 +28,7 @@ const AssignEmployeeModal = ({
         employee.employeeId,
         project.projectId,
         startDate.toISOString().split("T")[0],
-        endDate ? endDate.toISOString().split("T")[0] : null, // Use the same check here
+        endDate ? endDate.toISOString().split("T")[0] : null, 
         role
       );
       setSelectedEmployeeIds((prevSelected) => [...prevSelected, employee.employeeId]);

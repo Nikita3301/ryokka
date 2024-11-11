@@ -33,7 +33,6 @@ import { getProjectById } from "services/ProjectsService";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// Skeleton loader component
 const Skeleton = () => {
   return (
     <div className="relative bg-neutral-800 rounded-lg shadow-lg overflow-hidden animate-pulse">
@@ -61,7 +60,7 @@ export default function AdminProjectGallery() {
   const [projectLoading, setProjectLoading] = useState(true);
   const [projectError, setProjectError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [imagePreviews, setImagePreviews] = useState([]); // Store image preview URLs
+  const [imagePreviews, setImagePreviews] = useState([]);
 
   const groupedImagesByYear = {};
 
@@ -103,7 +102,6 @@ export default function AdminProjectGallery() {
   const handleSetMainImage = async (imageId) => {
     try {
       await setMainImage(imageId, projectId);
-      // Update the images state to reflect the new main image
       setImages((prevImages) =>
         prevImages.map((img) => ({
           ...img,
@@ -122,7 +120,6 @@ export default function AdminProjectGallery() {
     }
   };
 
-  // Group and sort images by year
   images.forEach((image) => {
     const date = new Date(image.date);
     const year = date.getFullYear();
@@ -175,8 +172,8 @@ export default function AdminProjectGallery() {
       setLoading(true);
 
       toast.success("Images uploaded successfully!");
-      setSelectedFiles([]); // Clear file input
-      setImagePreviews([]); // Clear preview URLs
+      setSelectedFiles([]);
+      setImagePreviews([]);
       fetchImages();
       setLoading(false);
     } catch (error) {
@@ -184,7 +181,6 @@ export default function AdminProjectGallery() {
       setLoading(false);
     }
   };
-  // Sort years in reverse order
   const sortedYears = Object.keys(groupedImagesByYear).sort((a, b) => b - a);
 
   const handleImageClick = (image) => {
@@ -225,7 +221,6 @@ export default function AdminProjectGallery() {
 
   return (
     <div className="flex flex-col h-full bg-neutral-950 w-full text-gray-200">
-      {/* Project Main Image */}
       {projectLoading ? (
         <Skeleton />
       ) : projectError ? (
@@ -248,7 +243,6 @@ export default function AdminProjectGallery() {
         </div>
       )}
 
-      {/* Project Details Table */}
       <div className="p-6 flex justify-center">
         {project && (
           <table>
@@ -348,14 +342,12 @@ export default function AdminProjectGallery() {
         )}
       </div>
 
-      {/* Add More Photos Button */}
       <div className="mt-4 flex justify-center items-center gap-5">
         <h1 className="text-2xl text-center font-semibold">
           Upload new photos
         </h1>
       </div>
       <div className="flex items-center w-full gap-4 p-4">
-        {/* Add More Photos Button */}
         <div
           className={`flex items-center justify-center ${
             selectedFiles.length === 0 ? "w-full" : ""
@@ -420,7 +412,6 @@ export default function AdminProjectGallery() {
         </div>
       </div>
 
-      {/* Show Upload Button when Files are Selected */}
       {selectedFiles.length > 0 && (
         <div className="mt-4 flex justify-center">
           <button
@@ -433,13 +424,10 @@ export default function AdminProjectGallery() {
         </div>
       )}
 
-      {/* <ImageGalleryComponent projectId={projectId} /> */}
-
       <div className="flex flex-col h-full bg-neutral-950 w-full text-gray-200">
         {sortedYears.map((year) => (
           <div key={year} className="p-6">
             <h2 className="text-2xl font-bold text-gray-100 mb-4">{year}</h2>
-            {/* Grid layout for gallery items */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 p-6">
               {loadingImages
                 ? Array(9)
@@ -496,7 +484,6 @@ export default function AdminProjectGallery() {
           </div>
         ))}
 
-        {/* Modal for selected image */}
         {selectedImage && (
           <div
             className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-10"
@@ -529,7 +516,6 @@ export default function AdminProjectGallery() {
         )}
       </div>
 
-      {/* Delete Modal */}
       <DeleteModal
         isOpen={isDelModalOpen}
         onClose={handleCloseDeleteModal}
@@ -543,13 +529,6 @@ export default function AdminProjectGallery() {
         theme="dark"
         stacked
       />
-      {/* Back to Top Button */}
-      {/* <button
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        className="absolute z-50 bottom-32 right-8 bg-teal-600 text-white p-3 rounded-full shadow-lg hover:bg-teal-700  duration-300"
-      >
-        <ChevronUpIcon className="h-6 w-6" />
-      </button> */}
     </div>
   );
 }

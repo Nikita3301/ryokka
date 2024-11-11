@@ -6,14 +6,13 @@ import { auth } from "../firebase/firebase";
 export default function PrivateRoutesLayout() {
   const [user, loading, error] = useAuthState(auth);
 
-  // Optionally handle the loading and error states
   if (loading) {
-    return <div>Loading...</div>; // Show a loading indicator while checking authentication state
+    return <div>Loading...</div>;
   }
 
   if (error) {
     console.error("Auth error:", error);
-    return <div>Error occurred</div>; // Handle authentication errors
+    return <div>Error occurred</div>;
   }
 
   if (!user) {

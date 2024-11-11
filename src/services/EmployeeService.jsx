@@ -64,30 +64,3 @@ export const updateEmployee = async (employee) => {
     throw error;
   }
 };
-
-// class EmployeeService {
-//     // Fetch all employees
-//     getEmployees() {
-//       return axiosInstance.get('/employees');
-//     }
-
-//     // Create a new employee
-//     createEmployee(employeeData) {
-//       return axiosInstance.post('/employees', employeeData);
-//     }
-
-//     // Get an employee by ID
-//     getEmployeeById(id) {
-//       return axiosInstance.get(`/employees/${id}`);
-//     }
-
-//     // Update an employee
-//     updateEmployee(id, employeeData) {
-//       return axiosInstance.put(`/employees/${id}`, employeeData);
-//     }
-
-//     // Delete an employee
-//     deleteEmployee(id) {
-//       return axiosInstance.delete(`/employees/${id}`);
-//     }
-// }

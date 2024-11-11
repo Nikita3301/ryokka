@@ -125,7 +125,7 @@ const InvoicesTab = ({ project, projectId }) => {
             <h2 className="text-lg text-center font-semibold">
               Project doesn't have any invoices yet.
             </h2>
-            <p className="text-neutral-500 pb-6">I feel sorry for you....</p>
+            <p className="text-neutral-500 pb-6"> No data found ....</p>
           </div>
         )}
       </div>

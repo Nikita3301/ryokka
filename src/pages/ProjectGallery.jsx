@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { XMarkIcon, MapPinIcon } from "@heroicons/react/24/solid";
+import { useNavigate} from "react-router-dom";
+import {MapPinIcon } from "@heroicons/react/24/solid";
 import {
-  ChevronUpIcon,
   ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/24/outline";
 import { getProjectImagesById } from "services/GalleryService";
 import { getProjectById } from "services/ProjectsService";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ImageGalleryComponent from "../components/ImageGalleryComponent";
+import ImageGalleryComponent from "components/ImageGalleryComponent";
 
-// Skeleton loader component
 const Skeleton = () => {
   return (
     <div className="relative bg-neutral-800 rounded-lg shadow-lg overflow-hidden animate-pulse">
@@ -36,7 +34,6 @@ export default function ProjectGallery() {
   const [projectError, setProjectError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
 
-  // Group images by year and sort years in reverse order
   const groupedImagesByYear = {};
 
   useEffect(() => {
@@ -70,7 +67,6 @@ export default function ProjectGallery() {
     fetchProject();
   }, [projectId]);
 
-  // Group and sort images by year
   images.forEach((image) => {
     const date = new Date(image.date);
     const year = date.getFullYear();
@@ -81,7 +77,6 @@ export default function ProjectGallery() {
     groupedImagesByYear[year].push(image);
   });
 
-  // Sort years in reverse order
   const sortedYears = Object.keys(groupedImagesByYear).sort((a, b) => b - a);
 
   const handleImageClick = (image) => {
@@ -94,7 +89,6 @@ export default function ProjectGallery() {
 
   return (
     <div className="flex flex-col h-full bg-neutral-950 w-full text-gray-200">
-      {/* Project Main Image */}
       {projectLoading ? (
         <Skeleton />
       ) : projectError ? (
@@ -154,18 +148,6 @@ export default function ProjectGallery() {
         theme="dark"
         stacked
       />
-      {/* Back to Top Button */}
-      {/* <button
-        onClick={() => {
-          window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-          });
-        }}
-        className="absolute z-50 bottom-32 right-8 bg-teal-600 text-white p-3 rounded-full shadow-lg hover:bg-teal-700  duration-300"
-      >
-        <ChevronUpIcon className="h-6 w-6" />
-      </button> */}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { createInvoice } from "services/InvoiceService"; // Assume you have this service for API calls
+import { createInvoice } from "services/InvoiceService";
 import { toast } from "react-toastify";
 import DatePicker from "react-datepicker";
 import { CalendarDaysIcon } from "@heroicons/react/24/outline";
