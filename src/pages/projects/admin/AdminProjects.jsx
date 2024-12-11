@@ -6,7 +6,7 @@ import { getAllProjects } from "services/ProjectsService";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import ProjectCard from "pages/projects/ProjectCard";
 import NewProjectForm from "./NewProjectForm";
-import ToastInit from "../../../components/ToastInit";
+import ToastInit from "components/ToastInit";
 
 export default function AdminProjects() {
   const navigate = useNavigate();

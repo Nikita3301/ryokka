@@ -61,44 +61,41 @@ const ResourcesTab = ({ projectId }) => {
       </div>
       <div className="overflow-x-auto flex justify-center p-3">
         {resources?.length > 0 ? (
-          <table className="divide-y divide-neutral-900">
+          <table className="divide-y divide-neutral-900 table-auto min-w-fit whitespace-normal">
             <thead className="bg-neutral-950 text-neutral-400 text-sm font-medium text-center">
               <tr>
-                <th className="px-6 py-2">Name</th>
-                <th className="px-6 py-2 text-left">Description</th>
-                <th className="px-6 py-2">Type</th>
-                <th className="px-6 py-2">Unit of Measure</th>
-                <th className="px-6 py-2">Unit Cost</th>
-                <th className="px-6 py-2">Quantity</th>
-                <th className="px-6 py-2">General Price</th>
-                <th className="px-6 py-2">Action</th>
+                <th className="px-2 py-2">Name</th>
+                <th className="px-2 py-2 text-left">Description</th>
+                <th className="px-2 py-2">Type</th>
+                <th className="px-2 py-2">Unit Cost</th>
+                <th className="px-2 py-2">Quantity</th>
+                <th className="px-2 py-2">General Price</th>
+                <th className="px-2 py-2">Action</th>
               </tr>
             </thead>
-            <tbody className="bg-neutral-900 divide-y text-center divide-neutral-600 text-sm">
+            <tbody className="bg-neutral-900 divide-y text-center divide-neutral-600 text-sm w-full">
               {resources.map((resource) => (
                 <tr key={resource.resourceId}>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-2 py-4">
                     {resource.resourceName}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-left">
+                  <td className="px-2 py-4 text-left">
                     {resource.resourceDescription}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-2 py-4 whitespace-nowrap">
                     {resource.resourceType}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {resource.unitOfMeasure}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                
+                  <td className="px-2 py-4 whitespace-nowrap">
                     $ {resource.unitCost.toFixed(2)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {resource.quantity}
+                  <td className="px-2 py-4 whitespace-nowrap">
+                    {resource.quantity} {resource.unitOfMeasure}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap font-semibold">
+                  <td className="px-2 py-4 whitespace-nowrap font-semibold">
                     $ {resource.generalPrice.toFixed(2)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center">
+                  <td className="px-2 py-4 whitespace-nowrap text-center">
                     <button
                       onClick={() => handleDelete(resource.resourceId)}
                       className="border-2 border-red-800 bg-red-600 text-red-500 bg-opacity-30 hover:bg-opacity-50 p-2 rounded-lg"

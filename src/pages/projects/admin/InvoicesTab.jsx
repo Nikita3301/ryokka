@@ -61,7 +61,7 @@ const InvoicesTab = ({ project, projectId }) => {
           Add new Invoice
         </button>
       </div>
-      <div className="overflow-x-auto flex justify-center p-3">
+      <div className="overflow-x-auto flex justify-center p-3 w-full">
         {invoices?.length > 0 ? (
           <table className=" divide-y divide-neutral-900 ">
             <thead className="bg-neutral-950 text-neutral-400 text-sm font-medium text-center">
@@ -78,10 +78,10 @@ const InvoicesTab = ({ project, projectId }) => {
             <tbody className="bg-neutral-900 divide-y text-center divide-neutral-600 text-sm">
               {invoices.map((invoice) => (
                 <tr key={invoice.invoiceId}>
-                  <td className="px-6 py-4 whitespace-nowrap ">
+                  <td className="px-6 py-4">
                     {invoice.invoiceName}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-left">
+                  <td className="px-6 py-4 text-left">
                     {invoice.invoiceDescription}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">

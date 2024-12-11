@@ -9,25 +9,20 @@ import {
   CurrencyDollarIcon,
   ChevronDownIcon,
   UserGroupIcon,
-  BanknotesIcon,
 } from "@heroicons/react/24/solid";
-import { faCircle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 import { format } from "date-fns";
 import ImageGalleryComponent from "components/ImageGalleryComponent";
-import { getAllClients } from "../../../services/ClientService";
-import ExcelExport from "../../../services/ExcelExport";
+import { getAllClients } from "services/ClientService";
 import ProjectImagesComponent from "../ProjectImagesComponent";
-import { getAllEmployees } from "../../../services/EmployeeService";
+import { getAllEmployees } from "services/EmployeeService";
 import { EnvelopeIcon, PhoneIcon } from "@heroicons/react/24/outline";
-import { removeEmployeeFromProject } from "../../../services/ProjectEmployeeService";
+import { removeEmployeeFromProject } from "services/ProjectEmployeeService";
 import AssignEmployeeModal from "./AssignEmployeeModal";
 import { toast } from "react-toastify";
-import AddInvoiceForm from "./AddInvoiceForm";
 import InvoicesTab from "./InvoicesTab";
 import ResourcesTab from "./ResourcesTab";
 
